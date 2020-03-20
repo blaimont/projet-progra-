@@ -1,7 +1,20 @@
 import colored,random, sys
 import numpy as np
 from itertools import zip_longest
-
+map = {'player1' : {'hub1':{'energy':int,
+                            'regenaration rate':int,
+                            'place':int,
+                            'strucuture point':int},
+                    }
+        'player2': {'hub2':{'energy':int,
+                            'regenaration rate':int,
+                            'place':int,
+                            'strucuture point':int},
+                    }
+        'peaks': {'energy':{'energy':int,
+                            'regenaration rate':int,
+                            'place':int},
+                            }}
 def grande_fonction():
   f = open("datas.txt","w+")
   create_map(f)
