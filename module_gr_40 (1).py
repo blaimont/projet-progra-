@@ -2,15 +2,71 @@ import colored,random, sys
 import numpy as np
 from itertools import zip_longest
 
-map = {"player1" : {"hub1"= {"energy":1500
-                            "regenaration_rate":25,
-                             "place":int,
-                            "strucuture_point":int},
-                    },
-        "player2" : {"hub2"= {"energy":1500,
-                            "regenaration_rate":25,
-                            "place":int,
-                            "strucuture_point":int},
+def map_dict ()
+    fh = open ('loulou.txt', 'w')
+
+    #write the rows and cols of the map 
+    fh.write ('map:\n')
+    nb_rows =str(random.randint(15,30))
+    nb_cols = str (random.randint(25,35))
+    fh.write (nb_rows + ' '+ nb_cols +'\n')
+
+    #write the hubs in the folder 
+    fh.write ('hubs:\n')
+    x_coordonate_hub_1 = str (random.randint(0,14))
+    y_coordonate_hub_1 = str (random.randint(0,20))
+    x_coordonate_hub_2 = str (random.randint(int(nb_rows)-10, int(nb_rows)))
+    y_coordonate_hub_2 = str (random.randint(int(nb_cols)-10, int(nb_cols)))
+    fh.write (x_coordonate_hub_1 + ' ' + y_coordonate_hub_1 + ' ' + '1500 25 750\n')
+    fh.write (x_coordonate_hub_1 + ' ' + y_coordonate_hub_2 + ' ' + '1500 25 750\n')
+
+    #write the peaks in the folder 
+    fh.write('peaks:\n')
+    nb_peaks = random.randint (3,8)
+    while nb_peaks > 0:
+        x_coordonate_peak = str (random.randint(0, int(nb_rows)))
+        y_coordonate_peak = str (random.randint(0, int(nb_cols)))
+        energy = str (random.randint(200,600))
+        fh.write (x_coordonate_peak + ' ' + y_coordonate_peak + ' ' + energy + '\n')
+        nb_peaks -= 1
+    fh.close ()
+
+    #create the dictionnary 
+    fh = open ('loulou.txt', 'r')
+    map = {}
+    lines = fh.readlines()
+
+    #add the sice of the map
+    line_map = lines[1]
+    xx, yy = str.split(line_map[:-1], ' ')
+    map ['sice'] = (int(xx),int(yy))
+
+    #add the first hub
+    line_hub1 = lines[3]
+    x, y, energi, regenaration, structure_points = str.split(line_hub1[:-1], ' ')
+    map ['player1']= {'hub': {'place':(int(x),int(y)),
+                            'energy' : int(energi),
+                            'regeneration_rate' : int(regenaration),
+                            'structure_points' : int(structure_points)}}
+
+    #add the second hub
+    line_hub2 = lines[4]
+    x, y, energi, regenaration, structure_points = str.split(line_hub2[:-1], ' ')
+    map ['player2']= {'hub': {'place':(int(x),int(y)),
+                            'energy' : int(energi),
+                            'regeneration_rate' : int(regenaration),
+                            'structure_points' : int(structure_points)}}
+    #add the peaks
+    line_peaks = lines[6:]
+    peak=1
+    for line in line_peaks:
+        x, y, energi = str.split(line[:-1], ' ')
+        peak_key = 'peak' + str(peak)
+        map [peak_key] = {'place':(int(x),int(y)),
+                        'energy' : int(energi)}
+        peak+=1
+    fh.close ()
+    return map
                     }}
 def grande_fonction():
   f = open("datas.txt","w+")
