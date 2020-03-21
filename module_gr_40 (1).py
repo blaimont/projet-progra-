@@ -1,15 +1,16 @@
 import colored,random, sys
 import numpy as np
 from itertools import zip_longest
-map = {'player1' : {'hub1':{'energy':int,
-                            'regenaration rate':int,
-                            'place':int,
-                            'strucuture point':int},
-                    }
-        'player2': {'hub2':{'energy':int,
-                            'regenaration rate':int,
-                            'place':int,
-                            'strucuture point':int},
+
+map = {"player1" : {"hub1"= {"energy":1500
+                            "regenaration_rate":25,
+                             "place":int,
+                            "strucuture_point":int},
+                    },
+        "player2" : {"hub2"= {"energy":1500,
+                            "regenaration_rate":25,
+                            "place":int,
+                            "strucuture_point":int},
                     }}
 def grande_fonction():
   f = open("datas.txt","w+")
@@ -43,7 +44,6 @@ def create_map (f):
     create_hub(f, s, nb_rows, nb_cols)
     print(s)
     
-    
 def create_hub (f, s, map_x, map_y):
     """ create 2 hubs of each player
     return
@@ -68,9 +68,6 @@ def create_hub (f, s, map_x, map_y):
     s[hub_x1][hub_y1] = hubs
     s[hub_x2][hub_y2] = hubs
 
-
- 
-    
 def create_peaks ():
     """ create some peaks on the map
     return
@@ -105,7 +102,6 @@ def create_peaks ():
     s[peaks_x2][peaks_y2] = peaks
     s[peaks_x3][peaks_y3] = peaks
     s[peaks_x4][peaks_y4] = peaks
-
     
 def create_cruiser (cruiser_name, player_name):
     """ This fonction creates the cruisers next to the hub.
@@ -124,11 +120,11 @@ def create_cruiser (cruiser_name, player_name):
     Specification : Louis Blaimont (17/02)
     Implémentation : Elodie Fiorentino
     """
-#là il faut une liste pour l'emplacement du tanker (hub1 ou hub2) mais j'ai pas tout compris
-cruiser_name = {"name" : cruiser_name, "y_coordinate" : y_coordinate, "x_coordonate" : x_coordonnate,
+    #là il faut une liste pour l'emplacement du tanker (hub1 ou hub2) mais j'ai pas tout compris
+    cruiser_name = {"name" : cruiser_name, "y_coordinate" : y_coordinate, "x_coordonate" : x_coordonnate,
                 "stucture_points" : 100, "energy_capacity" : 400, "moves_cost" : 10, "attack_cost" : 10,"cost_purchase" : 750} 
-all_cruisers = cruiser_name #faut le déclarer dans la fct principale
-return all_cruisers, cruiser_name
+    all_cruisers = cruiser_name #faut le déclarer dans la fct principale
+    return all_cruisers, cruiser_name
 
 def create_tanker (tanker_name, player_name):
     """ This fonction creates the tankers next to the hub.
@@ -147,11 +143,11 @@ def create_tanker (tanker_name, player_name):
     Specification : Louis Blaimont (17/02)
     Implémentation : Camille Hooreman 
     """
-#là il faut une liste pour l'emplacement du tanker (hub1 ou hub2) mais j'ai pas tout compris
-tanker_name = {"name" : tanker_name, "y_coordinate" : y_coordinate, "x_coordonate" : x_coordonnate,
+    #là il faut une liste pour l'emplacement du tanker (hub1 ou hub2) mais j'ai pas tout compris
+    tanker_name = {"name" : tanker_name, "y_coordinate" : y_coordinate, "x_coordonate" : x_coordonnate,
                 "stucture_points" : 50, "energy_capacity" : 600, "moves_cost" : 0, "cost_purchase" : 1000} 
-all_tankers = tanker_name #faut le déclarer dans la fonction principale
-return all_tankers, tanker_name
+    all_tankers = tanker_name #faut le déclarer dans la fonction principale
+    return all_tankers, tanker_name
 
 def move (unity_name, column_number, line_number):
     """ Move the different unities where it is asked.
@@ -240,8 +236,22 @@ def regeneration (percentage_regen_hubs, percentage_regen_peaks):
     Version  
     -------
     Specification : Camille Hooreman (06/03/20)
-    Implementation : 
+    Implementation : Elodie Fiorentino
     """
+    if hub1["energy"] = 1500 :
+        energy = 1500
+    else :
+         hub1["energy"] +=10
+
+    if hub2 ["energy"] = 1500 :
+        energy = 1500
+    else :
+         hub2["energy"] +=10
+    
+    if all_peaks["peakn"] = int :
+        peakn = int
+    else:
+        all_peaks["peakn"] +=10
 
 def upgrade_tanker_energy (tanker_name):
     """ Upgrades the capacity of energy of a tanker
@@ -257,13 +267,13 @@ def upgrade_tanker_energy (tanker_name):
     Version
     -------
     Specification : Louis Blaimont (17/02/20)
-    Implementation : 
+    Implementation : Camille Hooreman
     """
-if tanker_name["energy_capacity"] = 1200 : 
-    #ne rien faire
-else  : 
-    tanker_name["energy_capacity"] += 100
-    # -600 énergie dans le hub
+    if tanker_name["energy_capacity"] >= 1200 : 
+        tanker_name ["energy_capacity"] = 1200
+    else  : 
+        tanker_name["energy_capacity"] += 100
+        player_hub["energy"] -= 600
 
 def upgrade_cruiser_move (cruiser_name):
     """ Upgrades the moves costs of a cruiser
@@ -279,14 +289,44 @@ def upgrade_cruiser_move (cruiser_name):
     Version
     -------
     Specification : Louis Blaimont (17/02/20)
-    Implementation : 
+    Implementation : Camille Hooreman
+    """
+    if cruiser_name ["move_cost"] > 5 : 
+        cruiser_name["move_cost"] -= 1 
+        player_hub["energy"] -= 500
+    else : 
+        cruiser_name ["move_cost"] = 5
+
+def upgrade_cruiser_range(cruiser_name) :
+    """Upgrades the range of a cruiser
+    Parameters
+    ----------
+    cruiser_name : the name of the cruiser we want to upgrade (str)
+    Return
+    ------
+    cruiser_name : the cruiser with his new range (dict)
+    Version
+    -------
     """
 
-if cruiser_name ["move_cost"] > 5 : 
-    cruiser_name["move_cost"] -= 1
-    #-500 énergie dans le hub
-else : 
-    #ne rien faire
+def upgrade_regen_hub (player_name) :
+    """ Upgrades the percentage of regeneration of a hub.
+    Parameters
+    ----------
+    player_name : the name of the player who wants to upgrade his hub (str)
+    Return
+    ------
+    player_name : the name of the player with his new hub (dict)
+    Version
+    -------
+    Specification : Camille Hooreman
+    Implementation : Camille Hooreman
+    """
+    if player_name ["regenaration rate"] >= 50 :
+        player_name ["regenaration rate"] = 50
+    else :
+        player_name["regenaration rate"] += 5
+        player_hub ["energy"] -= 750
 
 def end_game () : 
     """ Finish the game and tell who's the winner.
@@ -296,7 +336,6 @@ def end_game () :
     Specification : Camille Hooreman (06/03/20)
     Implementation : 
     """
-
 
 def energy_quest ():
     """ launge the game to the end """
