@@ -10,11 +10,7 @@ map = {'player1' : {'hub1':{'energy':int,
                             'regenaration rate':int,
                             'place':int,
                             'strucuture point':int},
-                    }
-        'peaks': {'energy':{'energy':int,
-                            'regenaration rate':int,
-                            'place':int},
-                            }}
+                    }}
 def grande_fonction():
   f = open("datas.txt","w+")
   create_map(f)
@@ -109,6 +105,7 @@ def create_peaks ():
     s[peaks_x2][peaks_y2] = peaks
     s[peaks_x3][peaks_y3] = peaks
     s[peaks_x4][peaks_y4] = peaks
+
     
 def create_cruiser (cruiser_name, player_name):
     """ This fonction creates the cruisers next to the hub.
