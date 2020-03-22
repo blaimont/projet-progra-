@@ -67,7 +67,6 @@ def create_map ():
                             'energy' : int(energi)}
         peak+=1
     fh.close ()
-    print (map)
 
     #show the board
     sice = map ['sice']
@@ -83,13 +82,13 @@ def create_map ():
     for row in range(1, nb_rows-1):
         board_str += line
         for col in range(1, nb_cols-1):
+            for peak in range (1, number_peaks + 1):
+                if (row, col) == map ['peak' + str(peak)]['place']:
+                    board_str += '%s▲%s'%(colored.fg(20), colored.attr('reset'))
             if (row, col) == map['player1']['hub']['place']:
                 board_str += '%s◈%s'%(colored.fg(5), colored.attr('reset'))
             elif (row, col) == map['player2']['hub']['place']:
                 board_str += '%s◈%s'%(colored.fg(1), colored.attr('reset'))
-            for peak in range (1, number_peaks + 1):
-                if (row, col) == map ['peak' + str(peak)]['place']:
-                    board_str += '%s▲%s'%(colored.fg(20), colored.attr('reset'))
             else:
                 board_str += fill
 
@@ -97,9 +96,6 @@ def create_map ():
         
     board_str += line * nb_cols
     print (board_str)
-create_map ()
-
-
 
 def grande_fonction():
   f = open("datas.txt","w+")
@@ -123,7 +119,6 @@ def create_cruiser (cruiser_name, player_name):
     Implémentation : Elodie Fiorentino, Louis Blaimont
     """
     create_map ()
-    print (map [player_name]['hub']['place'])
     hub_place = map [player_name]['hub']['place']
     map [player_name][cruiser_name]= {'place': (hub_place[0],hub_place[1]+1),
                                                 'structure_points':100,
@@ -134,7 +129,6 @@ def create_cruiser (cruiser_name, player_name):
     print (map)
     return (map)
 create_cruiser ('cruiser1', 'player1')
-
 
 def create_tanker (tanker_name, player_name):
     """ This fonction creates the tankers next to the hub.
@@ -162,7 +156,7 @@ def create_tanker (tanker_name, player_name):
     print (map)
     return map
 
-def move (unity_name, column_number, line_number):
+def move (unity_name, player_name, direction):
     """ Move the different unities where it is asked.
     Parameters
     ----------
@@ -175,7 +169,31 @@ def move (unity_name, column_number, line_number):
     Specification : Louis Blaimont (17/02/20)
     Implementation : 
     """
-def give_energy (player_name, tanker_name, cruiser_name, energy_amount):
+    create_map ()
+    print (map)
+    place = map[player_name][unity_name]['place']
+    if direction == 'right':
+        new_place = place[1] 
+        new_place += 1
+        map[player_name][unity_name]['place'] = (place[0], new_place)
+    elif direction == 'left':
+        new_place = place[1] 
+        new_place -= 1
+        map[player_name][unity_name]['place'] = (place[0], new_place)
+    elif direction == 'up':
+        new_place = place[0]
+        new_place -= 1
+        map[player_name][unity_name]['place'] = (new_place, place[1])
+    elif direction == 'down':
+        new_place = place[0] 
+        new_place += 1
+        map[player_name][unity_name]['place'] = (new_place, place[1])
+    else:
+        print ('the direction %s is not possible' %( direction))
+    
+    print (map)
+move ('cruiser1','player1', 'right')
+def give_energy (unit_giving, unit_receiving, energy_amount):
     """ Give energy to a cruiser.
     Parameters
     ----------
@@ -194,7 +212,7 @@ def give_energy (player_name, tanker_name, cruiser_name, energy_amount):
     Specification : Louis Blaimont (17/02/20), Camille Hooreman (06/03/20)
     Implementation :  
     """
-def pick_energy (unity_name):
+
     """  Pick the energy out of the hub or peaks.
     Parameters 
     ----------
