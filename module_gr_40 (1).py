@@ -1,9 +1,8 @@
 import colored,random, sys
-import numpy as np
-from itertools import zip_longest
-map = {}
+
+
 def create_map ():
-    fh = open ('loulou.txt', 'w')
+    fh = open ('energy_quest.txt', 'w')
 
     #write the rows and cols of the map 
     fh.write ('map:\n')
@@ -34,7 +33,8 @@ def create_map ():
     fh.close ()
 
     #create the dictionnary 
-    fh = open ('loulou.txt', 'r')
+    fh = open ('energy_quest.txt', 'r')
+    map = {}
     lines = fh.readlines()
 
     #add the sice of the map
@@ -67,14 +67,9 @@ def create_map ():
                             'energy' : int(energi)}
         peak+=1
     fh.close ()
-    return map
-print (create_map ())
-
+    print (map)
 
     #show the board
-def show_board ():
-    create_map ()
-    print (create_map ())
     sice = map ['sice']
     sys.argv[1]= sice[0]
     sys.argv[2] = sice[1]
@@ -101,8 +96,9 @@ def show_board ():
         board_str += line + '\n'
         
     board_str += line * nb_cols
-    return (board_str)
-show_board ()
+    print (board_str)
+create_map ()
+
 
 
 def grande_fonction():
@@ -127,8 +123,6 @@ def create_cruiser (cruiser_name, player_name):
     Implémentation : Elodie Fiorentino, Louis Blaimont
     """
     create_map ()
-    print (map)
-    print (player_name)
     print (map [player_name]['hub']['place'])
     hub_place = map [player_name]['hub']['place']
     map [player_name][cruiser_name]= {'place': (hub_place[0],hub_place[1]+1),
@@ -139,6 +133,7 @@ def create_cruiser (cruiser_name, player_name):
                                                 'firing_range':1} 
     print (map)
     return (map)
+create_cruiser ('cruiser1', 'player1')
 
 
 def create_tanker (tanker_name, player_name):
