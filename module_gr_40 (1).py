@@ -2,7 +2,7 @@ import colored,random, sys
 import numpy as np
 from itertools import zip_longest
 
-def map_dict ()
+def create_map ():
     fh = open ('loulou.txt', 'w')
 
     #write the rows and cols of the map 
@@ -13,19 +13,21 @@ def map_dict ()
 
     #write the hubs in the folder 
     fh.write ('hubs:\n')
-    x_coordonate_hub_1 = str (random.randint(0,14))
-    y_coordonate_hub_1 = str (random.randint(0,20))
-    x_coordonate_hub_2 = str (random.randint(int(nb_rows)-10, int(nb_rows)))
-    y_coordonate_hub_2 = str (random.randint(int(nb_cols)-10, int(nb_cols)))
+    x_coordonate_hub_1 = str (random.randint(2,7))
+    y_coordonate_hub_1 = str (random.randint(2,7))
+    x_coordonate_hub_2 = str (random.randint(int(nb_rows)-7, int(nb_rows)-2))
+    y_coordonate_hub_2 = str (random.randint(int(nb_cols)-7, int(nb_cols)-2))
     fh.write (x_coordonate_hub_1 + ' ' + y_coordonate_hub_1 + ' ' + '1500 25 750\n')
-    fh.write (x_coordonate_hub_1 + ' ' + y_coordonate_hub_2 + ' ' + '1500 25 750\n')
+    fh.write (x_coordonate_hub_2 + ' ' + y_coordonate_hub_2 + ' ' + '1500 25 750\n')
 
     #write the peaks in the folder 
     fh.write('peaks:\n')
     nb_peaks = random.randint (3,8)
+    number_peaks = nb_peaks
+    print (nb_peaks)
     while nb_peaks > 0:
-        x_coordonate_peak = str (random.randint(0, int(nb_rows)))
-        y_coordonate_peak = str (random.randint(0, int(nb_cols)))
+        x_coordonate_peak = str (random.randint(1, int(nb_rows)-1))
+        y_coordonate_peak = str (random.randint(1, int(nb_cols)-1))
         energy = str (random.randint(200,600))
         fh.write (x_coordonate_peak + ' ' + y_coordonate_peak + ' ' + energy + '\n')
         nb_peaks -= 1
@@ -45,17 +47,17 @@ def map_dict ()
     line_hub1 = lines[3]
     x, y, energi, regenaration, structure_points = str.split(line_hub1[:-1], ' ')
     map ['player1']= {'hub': {'place':(int(x),int(y)),
-                            'energy' : int(energi),
-                            'regeneration_rate' : int(regenaration),
-                            'structure_points' : int(structure_points)}}
+                                'energy' : int(energi),
+                                'regeneration_rate' : int(regenaration),
+                                'structure_points' : int(structure_points)}}
 
     #add the second hub
     line_hub2 = lines[4]
     x, y, energi, regenaration, structure_points = str.split(line_hub2[:-1], ' ')
     map ['player2']= {'hub': {'place':(int(x),int(y)),
-                            'energy' : int(energi),
-                            'regeneration_rate' : int(regenaration),
-                            'structure_points' : int(structure_points)}}
+                                'energy' : int(energi),
+                                'regeneration_rate' : int(regenaration),
+                                'structure_points' : int(structure_points)}}
     #add the peaks
     line_peaks = lines[6:]
     peak=1
@@ -63,101 +65,46 @@ def map_dict ()
         x, y, energi = str.split(line[:-1], ' ')
         peak_key = 'peak' + str(peak)
         map [peak_key] = {'place':(int(x),int(y)),
-                        'energy' : int(energi)}
+                            'energy' : int(energi)}
         peak+=1
     fh.close ()
-    return map
-                    }}
+    print (map)
+
+    #show the board
+    sice = map ['sice']
+    sys.argv[1]= sice[0]
+    sys.argv[2] = sice[1]
+    nb_rows = int(sys.argv[1])
+    nb_cols = int(sys.argv[2])
+
+    line = '□'
+    fill = '■'
+
+    board_str = line * nb_cols + '\n'
+    for row in range(1, nb_rows-1):
+        board_str += line
+        for col in range(1, nb_cols-1):
+            if (row, col) == map['player1']['hub']['place']:
+                board_str += '%s◈%s'%(colored.fg(5), colored.attr('reset'))
+            elif (row, col) == map['player2']['hub']['place']:
+                board_str += '%s◈%s'%(colored.fg(1), colored.attr('reset'))
+            for peak in range (1, number_peaks):
+                if (row, col) == map ['peak' + str(peak)]['place']:
+                    board_str += '%s▲%s'%(colored.fg(20), colored.attr('reset'))
+            else:
+                board_str += fill
+
+        board_str += line + '\n'
+        
+    board_str += line * nb_cols
+
+    print(board_str)
+create_map ()
+
+
 def grande_fonction():
   f = open("datas.txt","w+")
   create_map(f)
-def create_map (f):
-    """create the map with the hubs and the peaks on it
-    """
-    
-    sys.argv[1]= random.randint(10,30)
-    sys.argv[2]= random.randint(50,70)
-    nb_rows = int(sys.argv[1])
-    nb_cols = int(sys.argv[2])
-    f.write("map:")
-    f.write(str(nb_rows) +" "+  str(nb_cols) + "\n")
-
-    # https://www.fileformat.info/info/unicode/block/geometric_shapes/images.htm
-    line = '▒'
-    fill = '●'
-    s = []
-    #colonnes
-    s = [[c for c in '*'*nb_col]]
-    for i in range(1,nb_rows):
-        s = np.concatenate((s,s))
-    
-    #s = line * nb_cols + '\n'
-    #for col in range(1, nb_rows):
-     #   s += line * nb_cols + '\n'
-      #  s += colored.fg(random.randint(10, 11))
-       # s += colored.attr('reset')
-
-    create_hub(f, s, nb_rows, nb_cols)
-    print(s)
-    
-def create_hub (f, s, map_x, map_y):
-    """ create 2 hubs of each player
-    return
-    ------
-    energy = energy of the hub (int)
-    structure_points= the structure points of the hub (int)
-    energy_regeneration = regeneration rate of energy of the hub (float)
-    """
-    
-    hubs = "◈"
-    hub_x1 = random.randint(0, map_x-1)
-    hub_y1 = random.randint(0, map_y-1)
-    hub_x2 = random.randint(0, map_x)
-    hub_y2 = random.randint(0, map_y)
-    if hub_x2 == hub_x1: #si le 2ème hub a la même coordonnée que le premier, on la modifie
-        hub_x2 +=1
-    elif hub_y2 == hub_y1:
-        hub_y2 +=1
-    f.write("peaks:")
-    f.write(hub_x1 + " " + hub_y2 + " " + "1500 25\n") #on écrit dans le fichier la coordonnées des hubs
-    f.write(hub_x2 + " " + hub_y2 + " " + "1500 25\n")
-    s[hub_x1][hub_y1] = hubs
-    s[hub_x2][hub_y2] = hubs
-
-def create_peaks ():
-    """ create some peaks on the map
-    return
-    ------
-    energy = energy of the peak (int)
-    energy_regeneration = regeneration rate of energy of the peak (float)
-    """
-    peaks = '◎'
-    clonemap = list(s)
-    
-    peaks_x1 = random.randint(0, map_x)
-    peaks_y1 = random.randint(0, map_y)
-    peaks_x2 = random.randint(0, map_x)
-    peaks_y2 = random.randint(0, map_y)
-    while peaks_x2 == peaks_x1 && peaks_peaks_y2 == peaks_y1:
-        peaks_x2 = random.randint(0, map_x)
-    peaks_x3 = random.randint(0, map_x)
-    peaks_y3 = random.randint(0, map_y)
-    while peaks_x3 == peaks_x1 && peaks_peaks_y3 == peaks_y1 || peaks_x3 == peaks_x2 && peaks_peaks_y3 == peaks_y2:
-        peaks_x3 = random.randint(0, map_x)
-    peaks_x4 = random.randint(0, map_x)
-    peaks_y4 = random.randint(0, map_y)
-    while peaks_x4 == peaks_x1 && peaks_peaks_y4 == peaks_y1 || peaks_x4 == peaks_x2 && peaks_peaks_y4 == peaks_y2 || peaks_x4 == peaks_x3 && peaks_peaks_y4 == peaks_y3:
-        peaks_x3 = random.randint(0, map_x)
-
-    f.write("peaks:")
-    f.write(peaks_x1 + " " + peaks_y1 + " " + "1500 25\n") #on écrit dans le fichier la coordonnées des hubs
-    f.write(peaks_x2 + " " + peaks_y2 + " " + "1500 25\n")
-    f.write(peaks_x3 + " " + peaks_y3 + " " + "1500 25\n")
-    f.write(peaks_x4 + " " + peaks_y4 + " " + "1500 25\n")
-    s[peaks_x1][peaks_y1] = peaks
-    s[peaks_x2][peaks_y2] = peaks
-    s[peaks_x3][peaks_y3] = peaks
-    s[peaks_x4][peaks_y4] = peaks
     
 def create_cruiser (cruiser_name, player_name):
     """ This fonction creates the cruisers next to the hub.
@@ -294,17 +241,17 @@ def regeneration (percentage_regen_hubs, percentage_regen_peaks):
     Specification : Camille Hooreman (06/03/20)
     Implementation : Elodie Fiorentino
     """
-    if hub1["energy"] = 1500 :
+    if hub1["energy"] == 1500 :
         energy = 1500
     else :
          hub1["energy"] +=10
 
-    if hub2 ["energy"] = 1500 :
+    if hub2 ["energy"] == 1500 :
         energy = 1500
     else :
          hub2["energy"] +=10
     
-    if all_peaks["peakn"] = int :
+    if all_peaks["peakn"] == int :
         peakn = int
     else:
         all_peaks["peakn"] +=10
