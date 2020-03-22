@@ -82,14 +82,16 @@ def create_map ():
     for row in range(1, nb_rows-1):
         board_str += line
         for col in range(1, nb_cols-1):
+            x=0
             for peak in range (1, number_peaks + 1):
                 if (row, col) == map ['peak' + str(peak)]['place']:
                     board_str += '%s▲%s'%(colored.fg(20), colored.attr('reset'))
+                    x=1
             if (row, col) == map['player1']['hub']['place']:
                 board_str += '%s◈%s'%(colored.fg(5), colored.attr('reset'))
             elif (row, col) == map['player2']['hub']['place']:
                 board_str += '%s◈%s'%(colored.fg(1), colored.attr('reset'))
-            else:
+            elif x != 1:
                 board_str += fill
 
         board_str += line + '\n'
@@ -170,7 +172,6 @@ def move (unity_name, player_name, direction):
     Implementation : 
     """
     create_map ()
-    print (map)
     place = map[player_name][unity_name]['place']
     if direction == 'right':
         new_place = place[1] 
@@ -190,8 +191,6 @@ def move (unity_name, player_name, direction):
         map[player_name][unity_name]['place'] = (new_place, place[1])
     else:
         print ('the direction %s is not possible' %( direction))
-    
-    print (map)
 move ('cruiser1','player1', 'right')
 def give_energy (unit_giving, unit_receiving, energy_amount):
     """ Give energy to a cruiser.
