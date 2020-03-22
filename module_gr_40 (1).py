@@ -1,7 +1,7 @@
 import colored,random, sys
 import numpy as np
 from itertools import zip_longest
-
+map = {}
 def create_map ():
     fh = open ('loulou.txt', 'w')
 
@@ -24,10 +24,10 @@ def create_map ():
     fh.write('peaks:\n')
     nb_peaks = random.randint (3,8)
     number_peaks = nb_peaks
-    print (nb_peaks)
+
     while nb_peaks > 0:
-        x_coordonate_peak = str (random.randint(1, int(nb_rows)-1))
-        y_coordonate_peak = str (random.randint(1, int(nb_cols)-1))
+        x_coordonate_peak = str (random.randint(2, int(nb_rows)-2))
+        y_coordonate_peak = str (random.randint(2, int(nb_cols)-2))
         energy = str (random.randint(200,600))
         fh.write (x_coordonate_peak + ' ' + y_coordonate_peak + ' ' + energy + '\n')
         nb_peaks -= 1
@@ -35,7 +35,6 @@ def create_map ():
 
     #create the dictionnary 
     fh = open ('loulou.txt', 'r')
-    map = {}
     lines = fh.readlines()
 
     #add the sice of the map
@@ -68,9 +67,14 @@ def create_map ():
                             'energy' : int(energi)}
         peak+=1
     fh.close ()
-    print (map)
+    return map
+print (create_map ())
+
 
     #show the board
+def show_board ():
+    create_map ()
+    print (create_map ())
     sice = map ['sice']
     sys.argv[1]= sice[0]
     sys.argv[2] = sice[1]
@@ -88,7 +92,7 @@ def create_map ():
                 board_str += '%s◈%s'%(colored.fg(5), colored.attr('reset'))
             elif (row, col) == map['player2']['hub']['place']:
                 board_str += '%s◈%s'%(colored.fg(1), colored.attr('reset'))
-            for peak in range (1, number_peaks):
+            for peak in range (1, number_peaks + 1):
                 if (row, col) == map ['peak' + str(peak)]['place']:
                     board_str += '%s▲%s'%(colored.fg(20), colored.attr('reset'))
             else:
@@ -97,9 +101,8 @@ def create_map ():
         board_str += line + '\n'
         
     board_str += line * nb_cols
-
-    print(board_str)
-create_map ()
+    return (board_str)
+show_board ()
 
 
 def grande_fonction():
@@ -121,13 +124,22 @@ def create_cruiser (cruiser_name, player_name):
     Version
     -------
     Specification : Louis Blaimont (17/02)
-    Implémentation : Elodie Fiorentino
+    Implémentation : Elodie Fiorentino, Louis Blaimont
     """
-    #là il faut une liste pour l'emplacement du tanker (hub1 ou hub2) mais j'ai pas tout compris
-    cruiser_name = {"name" : cruiser_name, "y_coordinate" : y_coordinate, "x_coordonate" : x_coordonnate,
-                "stucture_points" : 100, "energy_capacity" : 400, "moves_cost" : 10, "attack_cost" : 10,"cost_purchase" : 750} 
-    all_cruisers = cruiser_name #faut le déclarer dans la fct principale
-    return all_cruisers, cruiser_name
+    create_map ()
+    print (map)
+    print (player_name)
+    print (map [player_name]['hub']['place'])
+    hub_place = map [player_name]['hub']['place']
+    map [player_name][cruiser_name]= {'place': (hub_place[0],hub_place[1]+1),
+                                                'structure_points':100,
+                                                'energy':400,
+                                                'moves_cost': 10,
+                                                'attack_cost' : 10,
+                                                'firing_range':1} 
+    print (map)
+    return (map)
+
 
 def create_tanker (tanker_name, player_name):
     """ This fonction creates the tankers next to the hub.
@@ -144,13 +156,16 @@ def create_tanker (tanker_name, player_name):
     Version
     -------
     Specification : Louis Blaimont (17/02)
-    Implémentation : Camille Hooreman 
+    Implémentation : Camille Hooreman, Louis Blaimont
     """
-    #là il faut une liste pour l'emplacement du tanker (hub1 ou hub2) mais j'ai pas tout compris
-    tanker_name = {"name" : tanker_name, "y_coordinate" : y_coordinate, "x_coordonate" : x_coordonnate,
-                "stucture_points" : 50, "energy_capacity" : 600, "moves_cost" : 0, "cost_purchase" : 1000} 
-    all_tankers = tanker_name #faut le déclarer dans la fonction principale
-    return all_tankers, tanker_name
+    create_map ()
+    hub_place = map [str(player_name)]['hub']['place']
+    map [str(player_name)][str(tanker_name)]= {'place': (hub_place[0] + 1,hub_place[1]),
+                                                'structure_points':50,
+                                                'energy':600,
+                                                'moves_cost': 0} 
+    print (map)
+    return map
 
 def move (unity_name, column_number, line_number):
     """ Move the different unities where it is asked.
