@@ -1,7 +1,7 @@
 import colored,random, sys
 
-
-def create_map ():
+map = {}
+def create_map (dictionnary):
     fh = open ('energy_quest.txt', 'w')
 
     #write the rows and cols of the map 
@@ -22,8 +22,7 @@ def create_map ():
     #write the peaks in the folder 
     fh.write('peaks:\n')
     nb_peaks = random.randint (3,8)
-    number_peaks = nb_peaks
-
+    map ['number_peaks'] = nb_peaks
     while nb_peaks > 0:
         x_coordonate_peak = str (random.randint(2, int(nb_rows)-2))
         y_coordonate_peak = str (random.randint(2, int(nb_cols)-2))
@@ -34,7 +33,6 @@ def create_map ():
 
     #create the dictionnary 
     fh = open ('energy_quest.txt', 'r')
-    map = {}
     lines = fh.readlines()
 
     #add the sice of the map
@@ -66,9 +64,12 @@ def create_map ():
         map [peak_key] = {'place':(int(x),int(y)),
                             'energy' : int(energi)}
         peak+=1
+    #add tankers and cruisers key
     fh.close ()
-
-    #show the board
+    return map 
+print (create_map (map))
+ #show the board
+def showboard (dictionnary):
     sice = map ['sice']
     sys.argv[1]= sice[0]
     sys.argv[2] = sice[1]
@@ -83,11 +84,31 @@ def create_map ():
         board_str += line
         for col in range(1, nb_cols-1):
             x=0
-            for peak in range (1, number_peaks + 1):
+            for peak in range (1, map ['number_peaks'] + 1):
                 if (row, col) == map ['peak' + str(peak)]['place']:
                     board_str += '%s▲%s'%(colored.fg(20), colored.attr('reset'))
                     x=1
-            if (row, col) == map['player1']['hub']['place']:
+            if 'cruisers'in map['player1']:
+                for cruiser in map ['player1']['cruisers']:
+                    if (row, col) == map['player1']['cruisers'][cruiser]['place']:
+                        board_str += '%s◉%s'%(colored.fg(10), colored.attr('reset'))
+                        x=1
+            if 'cruisers'in map['player2']:
+                for cruiser in map ['player2']['cruisers']:
+                    if (row, col) == map['player2']['cruisers'][cruiser]['place']:
+                        board_str += '%s◉%s'%(colored.fg(11), colored.attr('reset'))
+                        x=1
+            if 'tankers'in map['player1']:
+                for tanker in map ['player1']['tankers']:
+                    if (row, col) == map['player1']['tankers'][tanker]['place']:
+                        board_str += '%s▩%s'%(colored.fg(10), colored.attr('reset'))
+                        x=1
+            if 'tankers'in map['player2']:
+                for tanker in map ['player2']['tankers']:
+                    if (row, col) == map['player2']['tankers'][tanker]['place']:
+                        board_str += '%s▩%s'%(colored.fg(11), colored.attr('reset'))
+                        x=1
+            elif (row, col) == map['player1']['hub']['place']:
                 board_str += '%s◈%s'%(colored.fg(5), colored.attr('reset'))
             elif (row, col) == map['player2']['hub']['place']:
                 board_str += '%s◈%s'%(colored.fg(1), colored.attr('reset'))
@@ -120,18 +141,18 @@ def create_cruiser (cruiser_name, player_name):
     Specification : Louis Blaimont (17/02)
     Implémentation : Elodie Fiorentino, Louis Blaimont
     """
-    create_map ()
+
     hub_place = map [player_name]['hub']['place']
-    map [player_name][cruiser_name]= {'place': (hub_place[0],hub_place[1]+1),
-                                                'structure_points':100,
-                                                'energy':400,
-                                                'moves_cost': 10,
-                                                'attack_cost' : 10,
-                                                'firing_range':1} 
-    print (map)
+    map [player_name]['cruisers']= {cruiser_name:{'place': (hub_place[0],hub_place[1]+1),
+                                                    'structure_points':100,
+                                                    'energy':400,
+                                                    'moves_cost': 10,
+                                                    'attack_cost' : 10,
+                                                    'firing_range':1}}
+    
     return (map)
 create_cruiser ('cruiser1', 'player1')
-
+showboard (map)
 def create_tanker (tanker_name, player_name):
     """ This fonction creates the tankers next to the hub.
     Parameters
@@ -150,12 +171,12 @@ def create_tanker (tanker_name, player_name):
     Implémentation : Camille Hooreman, Louis Blaimont
     """
     create_map ()
-    hub_place = map [str(player_name)]['hub']['place']
-    map [str(player_name)][str(tanker_name)]= {'place': (hub_place[0] + 1,hub_place[1]),
+    hub_place = map [player_name]['hub']['place']
+    map [player_name]['tankers']= {tanker_name: {'place': (hub_place[0] + 1,hub_place[1]),
                                                 'structure_points':50,
                                                 'energy':600,
-                                                'moves_cost': 0} 
-    print (map)
+                                                'moves_cost': 0}}
+    
     return map
 
 def move (unity_name, player_name, direction):
@@ -171,27 +192,46 @@ def move (unity_name, player_name, direction):
     Specification : Louis Blaimont (17/02/20)
     Implementation : 
     """
-    create_map ()
-    place = map[player_name][unity_name]['place']
-    if direction == 'right':
-        new_place = place[1] 
-        new_place += 1
-        map[player_name][unity_name]['place'] = (place[0], new_place)
-    elif direction == 'left':
-        new_place = place[1] 
-        new_place -= 1
-        map[player_name][unity_name]['place'] = (place[0], new_place)
-    elif direction == 'up':
-        new_place = place[0]
-        new_place -= 1
-        map[player_name][unity_name]['place'] = (new_place, place[1])
-    elif direction == 'down':
-        new_place = place[0] 
-        new_place += 1
-        map[player_name][unity_name]['place'] = (new_place, place[1])
-    else:
-        print ('the direction %s is not possible' %( direction))
+    if unity_name[:-1] == 'cruiser':
+        place = map[player_name]['cruisers'][unity_name]['place']
+        if direction == 'right':
+            new_place = place[1] 
+            new_place += 1
+            map[player_name]['cruisers'][unity_name]['place'] = (place[0], new_place)
+        elif direction == 'left':
+            new_place = place[1] 
+            new_place -= 1
+            map[player_name]['cruisers'][unity_name]['place'] = (place[0], new_place)
+        elif direction == 'up':
+            new_place = place[0]
+            new_place -= 1
+            map[player_name]['cruisers'][unity_name]['place'] = (new_place, place[1])
+        elif direction == 'down':
+            new_place = place[0] 
+            new_place += 1
+            map[player_name]['cruisers'][unity_name]['place'] = (new_place, place[1])
+    elif unity_name[:-1] == 'tanker':
+        place = map[player_name]['tankers'][unity_name]['place']
+        if direction == 'right':
+            new_place = place[1] 
+            new_place += 1
+            map[player_name]['tankers'][unity_name]['place'] = (place[0], new_place)
+        elif direction == 'left':
+            new_place = place[1] 
+            new_place -= 1
+            map[player_name]['tankers'][unity_name]['place'] = (place[0], new_place)
+        elif direction == 'up':
+            new_place = place[0]
+            new_place -= 1
+            map[player_name]['tankers'][unity_name]['place'] = (new_place, place[1])
+        elif direction == 'down':
+            new_place = place[0] 
+            new_place += 1
+            map[player_name]['tankers'][unity_name]['place'] = (new_place, place[1])
+    return map
+    #il faut encore modifier l'énergie des croiseurs lorsqu'ils se déplacent 
 move ('cruiser1','player1', 'right')
+showboard (map)
 def give_energy (unit_giving, unit_receiving, energy_amount):
     """ Give energy to a cruiser.
     Parameters
