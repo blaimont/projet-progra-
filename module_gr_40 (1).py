@@ -235,6 +235,107 @@ def move (unity_name, player_name, direction):
     #il faut encore modifier l'énergie des croiseurs lorsqu'ils se déplacent 
 move ('cruiser1','player1', 'right')
 showboard (map)
+
+def attack (cruiser_attacking, unity_attacked,player_name, attack_domaged):
+    """Attack an unity of the other player.
+    Parameters
+    ----------
+    unity_name = the name of the attacked unity (str)
+
+    Returns
+    -------
+    energy_unity = the new energy of the unity after being attacked (int)
+
+    Version
+    -------
+    Specification : Louis Blaimont
+    Implementation : 
+    """
+    if player_name == 'player1':
+        tuple_cruiser = map ['player1']['cruisers'][cruiser_attacking]['place']
+        if unity_attacked[:-1] == 'cruiser':
+            tuple_unity = map ['player2']['cruisers'][unity_attacked]['place']
+        elif unity_attacked[:-1] == 'tanker':
+            tuple_unity = map ['player2']['tankers'][unity_attacked]['place']
+        elif unity_attacked == 'hub':
+            tuple_unity = map ['player2']['hub']['place']
+
+    elif player_name == 'player2':
+        tuple_cruiser = map ['player2']['cruisers'][cruiser_attacking]['place']
+        if unity_attacked[:-1] == 'cruiser':
+            tuple_unity = map ['player1']['cruisers'][unity_attacked]['place']
+        elif unity_attacked[:-1] == 'tanker':
+            tuple_unity = map ['player1']['tankers'][unity_attacked]['place']
+        elif unity_attacked == 'hub':
+            tuple_unity = map ['player1']['hub']['place']
+
+    energy_used = 10* attack_domaged
+    distance = abs(tuple_cruiser[0]-tuple_unity[0]) + abs(tuple_cruiser[1]-tuple_unity[1]
+    if player_name == 'player1':
+        if map ['player1']['cruisers'] [cruiser_attacking]['firing_range'] <= distance 
+        and map ['player1']['cruisers'] [cruiser_attacking]['energy'] >= energy_used:
+            map ['player1']['cruisers'] [cruiser_attacking]['energy'] -= energy_used
+            if unity_attacked[:-1] == 'cruiser':
+                map ['player2']['cruisers'][unity_attacked]['structure_points']-= attack_domaged
+                if map ['player2']['cruisers'][unity_attacked]['structure_points'] <= 0:
+                    del map ['player2']['cruisers'][unity_attacked]
+
+            elif unity_attacked[:-1] == 'tanker':
+                map ['player2']['tankers'][unity_attacked]['structure_points']-= attack_domaged
+                if map ['player2']['tankers'][unity_attacked]['structure_points'] <= 0:
+                    del map ['player2']['tankers'][unity_attacked]
+
+            elif unity_attacked == 'hub':
+                map ['player2']['hub']['structure_points'] -= attack_domaged
+
+    elif player_name == 'player2':
+        if map ['player2']['cruisers'] [cruiser_attacking]['firing_range'] <= distance 
+        and map ['player2']['cruisers'] [cruiser_attacking]['energy'] >= energy_used:
+            map ['player2']['cruisers'] [cruiser_attacking]['energy'] -= energy_used
+            if unity_attacked[:-1] == 'cruiser':
+                map ['player1']['cruisers'][unity_attacked]['structure_points']-= attack_domaged
+                if map ['player1']['cruisers'][unity_attacked]['structure_points'] <= 0:
+                    del map ['player1']['cruisers'][unity_attacked]
+
+            elif unity_attacked[:-1] == 'tanker':
+                map ['player1']['tankers'][unity_attacked]['structure_points']-= attack_domaged
+                if map ['player1']['tankers'][unity_attacked]['structure_points'] <= 0:
+                    del map ['player1']['tankers'][unity_attacked]
+
+            elif unity_attacked == 'hub':
+                map ['player1']['hub']['structure_points'] -= attack_domaged
+    return map
+
+def upgrade (upgrade_kind, unity_name, player_name):
+    if unity_name[:-1] == 'cruiser':
+        if upgrade_kind == 'firing_range' 
+        and map[player_name]['hub']['energy'] >=400 
+        and map[player_name]['cruisers'][unity_name]['firing_range'] < 5:
+            map[player_name]['cruisers'][unity_name]['firing_range'] += 1
+            map[player_name]['hub']['energy'] -= 400
+        
+        elif upgrade_kind == 'move_cost' 
+        and map[player_name]['hub']['energy'] >=500 
+        and map[player_name]['cruisers'][unity_name]['move_cost'] > 5:
+            map[player_name]['cruisers'][unity_name]['move_cost'] -= 1
+            map[player_name]['hub']['energy'] -= 500
+        else:
+            print ()
+
+    elif unity_name[:-1] == 'tanker':
+        if upgrade_kind == 'energy_capacity'
+        and map[player_name]['tankers'][unity_name]['energy_capacity'] < 1200
+        and map[player_name]['hub']['energy'] >= 600:
+            map[player_name]['tankers'][unity_name]['energy_capacity'] +=100 
+            map[player_name]['hub']['energy'] -= 600
+        
+    elif unity_name == 'hub':
+        if upgrade_kind == 'regenartion_rate'
+        and map[player_name] ['hub']['regeneration_rate'] < 50
+        and map[player_name]['hub']['energy'] >= 750:
+            map[player_name] ['hub']['regeneration_rate'] +=5 
+            map[player_name]['hub']['energy'] -= 750
+
 def give_energy (unit_giving, unit_receiving, energy_amount):
     """ Give energy to a cruiser.
     Parameters
@@ -272,22 +373,6 @@ def give_energy (unit_giving, unit_receiving, energy_amount):
     Implementation : 
     """
 
-def attack (cruiser_attacking, unity_attacked, attack_amount):
-    """Attack an unity of the other player.
-    Parameters
-    ----------
-    unity_name = the name of the attacked unity (str)
-
-    Returns
-    -------
-    energy_unity = the new energy of the unity after being attacked (int)
-
-    Version
-    -------
-    Specification : Louis Blaimont
-    Implementation : 
-    """
-
 def regeneration (percentage_regen_hubs, percentage_regen_peaks):
 
     """Regenerate the energy of a hub or a peak.
@@ -321,111 +406,6 @@ def regeneration (percentage_regen_hubs, percentage_regen_peaks):
         peakn = int
     else:
         all_peaks["peakn"] +=10
-
-def upgrade (upgrade_kind, unity_name, player_name):
-    if unity_name[:-1] == 'cruiser':
-        if upgrade_kind == 'firing_range' 
-        and map[player_name]['hub']['energy'] >=400 
-        and map[player_name]['cruisers'][unity_name]['firing_range'] < 5:
-            map[player_name]['cruisers'][unity_name]['firing_range'] += 1
-            map[player_name]['hub']['energy'] -= 400
-        
-        elif upgrade_kind == 'move_cost' 
-        and map[player_name]['hub']['energy'] >=500 
-        and map[player_name]['cruisers'][unity_name]['move_cost'] > 5:
-            map[player_name]['cruisers'][unity_name]['move_cost'] -= 1
-            map[player_name]['hub']['energy'] -= 500
-        else:
-            print ()
-
-    elif unity_name[:-1] == 'tanker':
-        if upgrade_kind == 'energy_capacity'
-        and map[player_name]['tankers'][unity_name]['energy_capacity'] < 1200
-        and map[player_name]['hub']['energy'] >= 600:
-            map[player_name]['tankers'][unity_name]['energy_capacity'] +=100 
-            map[player_name]['hub']['energy'] -= 600
-        
-    elif unity_name == 'hub':
-        if upgrade_kind == 'regenartion_rate'
-        and map[player_name] ['hub']['regeneration_rate'] < 50
-        and map[player_name]['hub']['energy'] >= 750:
-            map[player_name] ['hub']['regeneration_rate'] +=5 
-            map[player_name]['hub']['energy'] -= 750
-
-def upgrade_tanker_energy (tanker_name):
-    """ Upgrades the capacity of energy of a tanker
-
-    Parameters 
-    ----------
-    tanker_name : the name of the tanker we want to upgrade (str)
-
-    Return
-    ------
-    tanker_name : the tanker with his new capacity (dict)
-
-    Version
-    -------
-    Specification : Louis Blaimont (17/02/20)
-    Implementation : Camille Hooreman
-    """
-    if tanker_name["energy_capacity"] >= 1200 : 
-        tanker_name ["energy_capacity"] = 1200
-    else  : 
-        tanker_name["energy_capacity"] += 100
-        player_hub["energy"] -= 600
-
-def upgrade_cruiser_move (cruiser_name):
-    """ Upgrades the moves costs of a cruiser
-
-    Parameters 
-    ----------
-    cruiser_name : the name of the cruiser we want to upgrade (str)
-
-    Return
-    ------
-    cruiser_name : the cruiser with his new move cost (dict)
-
-    Version
-    -------
-    Specification : Louis Blaimont (17/02/20)
-    Implementation : Camille Hooreman
-    """
-    if cruiser_name ["move_cost"] > 5 : 
-        cruiser_name["move_cost"] -= 1 
-        player_hub["energy"] -= 500
-    else : 
-        cruiser_name ["move_cost"] = 5
-
-def upgrade_cruiser_range(cruiser_name) :
-    """Upgrades the range of a cruiser
-    Parameters
-    ----------
-    cruiser_name : the name of the cruiser we want to upgrade (str)
-    Return
-    ------
-    cruiser_name : the cruiser with his new range (dict)
-    Version
-    -------
-    """
-
-def upgrade_regen_hub (player_name) :
-    """ Upgrades the percentage of regeneration of a hub.
-    Parameters
-    ----------
-    player_name : the name of the player who wants to upgrade his hub (str)
-    Return
-    ------
-    player_name : the name of the player with his new hub (dict)
-    Version
-    -------
-    Specification : Camille Hooreman
-    Implementation : Camille Hooreman
-    """
-    if player_name ["regenaration rate"] >= 50 :
-        player_name ["regenaration rate"] = 50
-    else :
-        player_name["regenaration rate"] += 5
-        player_hub ["energy"] -= 750
 
 def end_game () : 
     """ Finish the game and tell who's the winner.
