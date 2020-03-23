@@ -68,7 +68,7 @@ def create_map (dictionnary):
     fh.close ()
     return map 
 print (create_map (map))
- #show the board
+
 def showboard (dictionnary):
     sice = map ['sice']
     sys.argv[1]= sice[0]
@@ -120,7 +120,6 @@ def showboard (dictionnary):
     board_str += line * nb_cols
     print (board_str)
 
-def grande_fonction():
   f = open("datas.txt","w+")
   create_map(f)
     
@@ -145,14 +144,16 @@ def create_cruiser (cruiser_name, player_name):
     hub_place = map [player_name]['hub']['place']
     map [player_name]['cruisers']= {cruiser_name:{'place': (hub_place[0],hub_place[1]+1),
                                                     'structure_points':100,
+                                                    'energy_capacity':400,
                                                     'energy':400,
-                                                    'moves_cost': 10,
+                                                    'move_cost': 10,
                                                     'attack_cost' : 10,
                                                     'firing_range':1}}
-    
+    #retirer l'énergie dans le bon hub
     return (map)
 create_cruiser ('cruiser1', 'player1')
 showboard (map)
+
 def create_tanker (tanker_name, player_name):
     """ This fonction creates the tankers next to the hub.
     Parameters
@@ -174,8 +175,10 @@ def create_tanker (tanker_name, player_name):
     hub_place = map [player_name]['hub']['place']
     map [player_name]['tankers']= {tanker_name: {'place': (hub_place[0] + 1,hub_place[1]),
                                                 'structure_points':50,
+                                                'energy_capacity':600,
                                                 'energy':600,
-                                                'moves_cost': 0}}
+                                                'move_cost': 0}}
+    #retirer l'énergie dans le bon hub
     
     return map
 
@@ -268,7 +271,8 @@ def give_energy (unit_giving, unit_receiving, energy_amount):
     Specification : Louis Blaimont (17/02/20)
     Implementation : 
     """
-def attack (unity_name):
+
+def attack (cruiser_attacking, unity_attacked, attack_amount):
     """Attack an unity of the other player.
     Parameters
     ----------
@@ -283,14 +287,9 @@ def attack (unity_name):
     Specification : Louis Blaimont
     Implementation : 
     """
-def modify_caracter ():
-    """ Modify the caracter in the folder
-    
-    Version
-    -------
-    Specification : Louis Blaimont (17/02/20)
-    Implementation : """
+
 def regeneration (percentage_regen_hubs, percentage_regen_peaks):
+
     """Regenerate the energy of a hub or a peak.
     
     Parameters
@@ -322,6 +321,36 @@ def regeneration (percentage_regen_hubs, percentage_regen_peaks):
         peakn = int
     else:
         all_peaks["peakn"] +=10
+
+def upgrade (upgrade_kind, unity_name, player_name):
+    if unity_name[:-1] == 'cruiser':
+        if upgrade_kind == 'firing_range' 
+        and map[player_name]['hub']['energy'] >=400 
+        and map[player_name]['cruisers'][unity_name]['firing_range'] < 5:
+            map[player_name]['cruisers'][unity_name]['firing_range'] += 1
+            map[player_name]['hub']['energy'] -= 400
+        
+        elif upgrade_kind == 'move_cost' 
+        and map[player_name]['hub']['energy'] >=500 
+        and map[player_name]['cruisers'][unity_name]['move_cost'] > 5:
+            map[player_name]['cruisers'][unity_name]['move_cost'] -= 1
+            map[player_name]['hub']['energy'] -= 500
+        else:
+            print ()
+
+    elif unity_name[:-1] == 'tanker':
+        if upgrade_kind == 'energy_capacity'
+        and map[player_name]['tankers'][unity_name]['energy_capacity'] < 1200
+        and map[player_name]['hub']['energy'] >= 600:
+            map[player_name]['tankers'][unity_name]['energy_capacity'] +=100 
+            map[player_name]['hub']['energy'] -= 600
+        
+    elif unity_name == 'hub':
+        if upgrade_kind == 'regenartion_rate'
+        and map[player_name] ['hub']['regeneration_rate'] < 50
+        and map[player_name]['hub']['energy'] >= 750:
+            map[player_name] ['hub']['regeneration_rate'] +=5 
+            map[player_name]['hub']['energy'] -= 750
 
 def upgrade_tanker_energy (tanker_name):
     """ Upgrades the capacity of energy of a tanker
