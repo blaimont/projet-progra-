@@ -1,7 +1,7 @@
 import colored,random, sys
 
 map = {}
-def create_map (dictionnary):
+def create_map ():
     fh = open ('energy_quest.txt', 'w')
 
     #write the rows and cols of the map 
@@ -18,6 +18,7 @@ def create_map (dictionnary):
     y_coordonate_hub_2 = str (random.randint(int(nb_cols)-7, int(nb_cols)-2))
     fh.write (x_coordonate_hub_1 + ' ' + y_coordonate_hub_1 + ' ' + '1500 25 750\n')
     fh.write (x_coordonate_hub_2 + ' ' + y_coordonate_hub_2 + ' ' + '1500 25 750\n')
+    #attenton à l'énergie prcq la on a seulement le max
 
     #write the peaks in the folder 
     fh.write('peaks:\n')
@@ -44,7 +45,8 @@ def create_map (dictionnary):
     line_hub1 = lines[3]
     x, y, energi, regenaration, structure_points = str.split(line_hub1[:-1], ' ')
     map ['player1']= {'hub': {'place':(int(x),int(y)),
-                                'energy' : int(energi),
+                                'energy_capacity' : int(energi),
+                                'energy':1500
                                 'regeneration_rate' : int(regenaration),
                                 'structure_points' : int(structure_points)}}
 
@@ -52,7 +54,8 @@ def create_map (dictionnary):
     line_hub2 = lines[4]
     x, y, energi, regenaration, structure_points = str.split(line_hub2[:-1], ' ')
     map ['player2']= {'hub': {'place':(int(x),int(y)),
-                                'energy' : int(energi),
+                                'energy_capacity' : int(energi),
+                                'energy':1500
                                 'regeneration_rate' : int(regenaration),
                                 'structure_points' : int(structure_points)}}
     #add the peaks
@@ -67,9 +70,9 @@ def create_map (dictionnary):
     #add tankers and cruisers key
     fh.close ()
     return map 
-print (create_map (map))
+print (create_map ())
 
-def showboard (dictionnary):
+def showboard ():
     sice = map ['sice']
     sys.argv[1]= sice[0]
     sys.argv[2] = sice[1]
@@ -152,7 +155,7 @@ def create_cruiser (cruiser_name, player_name):
     #retirer l'énergie dans le bon hub
     return (map)
 create_cruiser ('cruiser1', 'player1')
-showboard (map)
+showboard ()
 
 def create_tanker (tanker_name, player_name):
     """ This fonction creates the tankers next to the hub.
@@ -234,7 +237,7 @@ def move (unity_name, player_name, direction):
     return map
     #il faut encore modifier l'énergie des croiseurs lorsqu'ils se déplacent 
 move ('cruiser1','player1', 'right')
-showboard (map)
+showboard ()
 
 def attack (cruiser_attacking, unity_attacked,player_name, attack_domaged):
     """Attack an unity of the other player.
@@ -335,8 +338,9 @@ def upgrade (upgrade_kind, unity_name, player_name):
         and map[player_name]['hub']['energy'] >= 750:
             map[player_name] ['hub']['regeneration_rate'] +=5 
             map[player_name]['hub']['energy'] -= 750
+    return map
 
-def give_energy (unit_giving, unit_receiving, energy_amount):
+def give_energy (unit_giving, unit_receiving, energy_amount, player_name):
     """ Give energy to a cruiser.
     Parameters
     ----------
@@ -353,27 +357,81 @@ def give_energy (unit_giving, unit_receiving, energy_amount):
     Version
     -------
     Specification : Louis Blaimont (17/02/20), Camille Hooreman (06/03/20)
-    Implementation :  
+    Implementation :  nadia bouzin, louis blaimont
     """
+    if unit_giving[:-1] == 'tanker':
+        tuple_tanker = map [player_name]['tankers'][unit_giving]['place']
+        if unit_receiving == 'hub':
+            tuple_hub = map [player_name]['hub']['place']
+            if tuple_tanker == tuple_hub:
+                energy_capacity = [player_name]['hub']['energy_capacity']
+                if map [player_name]['hub']['energy'] + energy_amount <= energy_capcity 
+                and  map [player_name]['tankers'][unit_giving]['energy'] - energy_amount >=0:
+                    map [player_name]['tankers'][unit_giving]['energy'] -= energy_amount
+                    map [player_name]['hub']['energy'] += energy_amount
 
-    """  Pick the energy out of the hub or peaks.
-    Parameters 
-    ----------
-    unity_name = the name of the hub or peak where the tanker take the energy (str)
+        if unit_receiving[:-1] == 'cruiser':
+            tuple_cruiser = map [player_name]['cruisers'] [unit_receiving]['place']
+            if tuple_tanker == tuple_cruiser:
+                energy_capacity = [player_name]['cruisers'][unit_receiving]['energy_capacity']
+                if map [player_name]['cruisers'] [unit_receiving]['energy'] + energy_amount <= energy_capacity
+                and map [player_name]['tankers'][unit_giving]['energy'] - energy_amount >=0:
+                    map [player_name]['tankers'][unit_giving]['energy'] -= energy_amount
+                    map [player_name]['cruisers'] [unit_receiving]['energy'] += energy_amount
 
-    Return
-    ------
-    hub_energy = the new energy of the hub (int)
-    peak_energy = the new energy of the peak (int)
-    energy_tanker = the new energy of the tanker (int)
+    if unit_giving[:-1] == 'peak':
+        tuple_peak = map [unit_giving]['place']
+        if unit_receiving[:-1] == 'tanker':
+            tuple_tanker = map [player_name]['tankers'] [unit_receiving]['place']
+            if tuple_peak == tuple_tanker:
+                energy_capacity = [player_name]['tankers'][unit_receiving]['energy_capacity']
+                if map [player_name]['tankers'] [unit_receiving]['energy'] + energy_amount <= energy_capacity
+                and map [unit_giving]['energy'] - energy_amount >=0:
+                    map [unit_giving]['energy'] -= energy_amount
+                    map [player_name]['tankers'][unit_receiving]['energy'] += energy_amount
+    
+    if unit_giving == 'hub':
+        tuple_hub = map [player_name]['hub']['place']
+        if unit_receiving[:-1] == 'tanker':
+            tuple_tanker = map [player_name]['tankers'] [unit_receiving]['place']
+            if tuple_hub == tuple_tanker:
+                energy_capacity = [player_name]['tankers'][unit_receiving]['energy_capacity']
+                if map [player_name]['tankers'] [unit_receiving]['energy'] + energy_amount <= energy_capacity
+                and map [player_name]['hub']['energy'] - energy_amount >=0:
+                    map [player_name]['hub']['energy'] -= energy_amount
+                    map [player_name]['tankers'][unit_giving]['energy'] += energy_amount
+    return map
+    #maybe for l'ia ihi a voir 
+    #alldist = [0 for i in range(map ['number_peaks']]
+    #for i in range(0:map ['number_peaks']-1):
+       # tuple_peaks = map [player_name]['peak'+i+1]['place']
+       # distance = abs(tuple_cruiser[0]-tuple_peaks[0]) + abs(tuple_cruiser[1]-tuple_peaks[1]
+        #alldist[i] = distance
+    #tuple_hub = map [player_name]['hub']['place']
+   # distancehub = abs(tuple_cruiser[0]-tuple_hub[0]) + abs(tuple_cruiser[1]-tuple_hub[1])
+   # alldist[map ['number_peaks']+1)] = distancehub
+    #nearest = min(alldist)
+    #if index(nearest) in 0:map ['number_peaks']-1:
+      #  tuple_peaks = map [player_name]['peak'+index(nearest)['place']
+      #  distx = 
+       # while distance < 8:        
+    #tuple_tanker = map [player_name]['tankers'][unit_giving]['place']
+    distx = tuple_cruiser[0]-tuple_peaks[0]
+    disty = tuple_cruiser[1]-tuple_peaks[1]
+    if distx < 0:
+        for i in range(1:abs(distx))
+            move(unit_receiving,player_name, 'right')
+    else
+         for i in range(1:distx)
+            move(unit_receiving,player_name, 'left')
+    if disty < 0:
+        for i in range(1:abs(disty))
+            move(unit_receiving,player_name, 'up')
+    else
+         for i in range(1:disty)
+            move(unit_receiving,player_name, 'down')
 
-    Version
-    -------
-    Specification : Louis Blaimont (17/02/20)
-    Implementation : 
-    """
-
-def regeneration (percentage_regen_hubs, percentage_regen_peaks):
+def regeneration (player_name):
 
     """Regenerate the energy of a hub or a peak.
     
@@ -385,29 +443,16 @@ def regeneration (percentage_regen_hubs, percentage_regen_peaks):
     Return
     ------
     energy_hub = the new energy of the hubs (int)
-    energy_peaks = the new energy of the peaks (int)
 
     Version  
     -------
     Specification : Camille Hooreman (06/03/20)
     Implementation : Elodie Fiorentino
     """
-    if hub1["energy"] == 1500 :
-        energy = 1500
-    else :
-         hub1["energy"] +=10
+    map [player_name]['hub']['energy'] += map[player_name]['hub']['regeneration_rate']
+    return map
 
-    if hub2 ["energy"] == 1500 :
-        energy = 1500
-    else :
-         hub2["energy"] +=10
-    
-    if all_peaks["peakn"] == int :
-        peakn = int
-    else:
-        all_peaks["peakn"] +=10
-
-def end_game () : 
+def turn_finish () : 
     """ Finish the game and tell who's the winner.
     
     Version
@@ -415,9 +460,21 @@ def end_game () :
     Specification : Camille Hooreman (06/03/20)
     Implementation : 
     """
+    your_turn == False
+    return your_turn
+def order ()
 
 def energy_quest ():
     """ launge the game to the end """
-    create_map
-    if structure_point_hub > 0:
-        blabla 
+    map = {}
+    create_map ()
+    player_turn = random.randint[1,2]
+    while structure_point_hub > 0:
+        your_turn = True
+        while your_turn == True:
+            if player_turn %2 == 0:
+                player_name = 'player1'            
+            elif player_turn %2 != 0:
+                player_name = 'player2'
+            player_turn += 1
+            order ()
