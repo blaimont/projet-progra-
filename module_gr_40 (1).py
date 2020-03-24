@@ -46,8 +46,8 @@ def create_map ():
     x, y, energi, regenaration, structure_points = str.split(line_hub1[:-1], ' ')
     map ['player1']= {'hub': {'place':(int(x),int(y)),
                                 'energy_capacity' : int(energi),
-                                'energy':1500
-                                'regeneration_rate' : int(regenaration),
+                                'energy':1500,
+                                'regeneration_rate': int(regenaration),
                                 'structure_points' : int(structure_points)}}
 
     #add the second hub
@@ -55,7 +55,7 @@ def create_map ():
     x, y, energi, regenaration, structure_points = str.split(line_hub2[:-1], ' ')
     map ['player2']= {'hub': {'place':(int(x),int(y)),
                                 'energy_capacity' : int(energi),
-                                'energy':1500
+                                'energy':1500,
                                 'regeneration_rate' : int(regenaration),
                                 'structure_points' : int(structure_points)}}
     #add the peaks
@@ -121,11 +121,7 @@ def showboard ():
         board_str += line + '\n'
         
     board_str += line * nb_cols
-    print (board_str)
-
-  f = open("datas.txt","w+")
-  create_map(f)
-    
+    print (board_str)  
 def create_cruiser (cruiser_name, player_name):
     """ This fonction creates the cruisers next to the hub.
     Parameters
@@ -254,6 +250,8 @@ def attack (cruiser_attacking, unity_attacked,player_name, attack_domaged):
     Specification : Louis Blaimont
     Implementation : 
     """
+
+    #for player1
     if player_name == 'player1':
         tuple_cruiser = map ['player1']['cruisers'][cruiser_attacking]['place']
         if unity_attacked[:-1] == 'cruiser':
@@ -263,20 +261,12 @@ def attack (cruiser_attacking, unity_attacked,player_name, attack_domaged):
         elif unity_attacked == 'hub':
             tuple_unity = map ['player2']['hub']['place']
 
-    elif player_name == 'player2':
-        tuple_cruiser = map ['player2']['cruisers'][cruiser_attacking]['place']
-        if unity_attacked[:-1] == 'cruiser':
-            tuple_unity = map ['player1']['cruisers'][unity_attacked]['place']
-        elif unity_attacked[:-1] == 'tanker':
-            tuple_unity = map ['player1']['tankers'][unity_attacked]['place']
-        elif unity_attacked == 'hub':
-            tuple_unity = map ['player1']['hub']['place']
-
-    energy_used = 10* attack_domaged
-    distance = abs(tuple_cruiser[0]-tuple_unity[0]) + abs(tuple_cruiser[1]-tuple_unity[1]
-    if player_name == 'player1':
-        if map ['player1']['cruisers'] [cruiser_attacking]['firing_range'] <= distance 
-        and map ['player1']['cruisers'] [cruiser_attacking]['energy'] >= energy_used:
+        #attack and changethe dictionnary
+        energy_used = 10* attack_domaged
+        distance = abs(tuple_cruiser[0]-tuple_unity[0]) + abs(tuple_cruiser[1]-tuple_unity[1]
+        firing_range = map['player1']['cruisers'][cruiser_attacking]['firing_range']
+        energy = map['player1']['cruisers'][cruiser_attacking]['energy']
+        if firing_range <= distance and  energy >= energy_used:
             map ['player1']['cruisers'] [cruiser_attacking]['energy'] -= energy_used
             if unity_attacked[:-1] == 'cruiser':
                 map ['player2']['cruisers'][unity_attacked]['structure_points']-= attack_domaged
@@ -291,9 +281,21 @@ def attack (cruiser_attacking, unity_attacked,player_name, attack_domaged):
             elif unity_attacked == 'hub':
                 map ['player2']['hub']['structure_points'] -= attack_domaged
 
+    #for the player2
     elif player_name == 'player2':
-        if map ['player2']['cruisers'] [cruiser_attacking]['firing_range'] <= distance 
-        and map ['player2']['cruisers'] [cruiser_attacking]['energy'] >= energy_used:
+        tuple_cruiser = map ['player2']['cruisers'][cruiser_attacking]['place']
+        if unity_attacked[:-1] == 'cruiser':
+            tuple_unity = map ['player1']['cruisers'][unity_attacked]['place']
+        elif unity_attacked[:-1] == 'tanker':
+            tuple_unity = map ['player1']['tankers'][unity_attacked]['place']
+        elif unity_attacked == 'hub':
+            tuple_unity = map ['player1']['hub']['place']
+
+        #attack and changethe dictionnary
+        energy_used = 10* attack_domaged
+        distance = abs(tuple_cruiser[0]-tuple_unity[0]) + abs(tuple_cruiser[1]-tuple_unity[1]
+        if map['player2']['cruisers'][cruiser_attacking]['firing_range'] <= distance 
+        and map['player2']['cruisers'][cruiser_attacking]['energy'] >= energy_used:
             map ['player2']['cruisers'] [cruiser_attacking]['energy'] -= energy_used
             if unity_attacked[:-1] == 'cruiser':
                 map ['player1']['cruisers'][unity_attacked]['structure_points']-= attack_domaged
@@ -307,6 +309,7 @@ def attack (cruiser_attacking, unity_attacked,player_name, attack_domaged):
 
             elif unity_attacked == 'hub':
                 map ['player1']['hub']['structure_points'] -= attack_domaged
+        
     return map
 
 def upgrade (upgrade_kind, unity_name, player_name):
@@ -401,22 +404,6 @@ def give_energy (unit_giving, unit_receiving, energy_amount, player_name):
                     map [player_name]['hub']['energy'] -= energy_amount
                     map [player_name]['tankers'][unit_giving]['energy'] += energy_amount
     return map
-    #maybe for l'ia ihi a voir 
-    #alldist = [0 for i in range(map ['number_peaks']]
-    #for i in range(0:map ['number_peaks']-1):
-       # tuple_peaks = map [player_name]['peak'+i+1]['place']
-       # distance = abs(tuple_cruiser[0]-tuple_peaks[0]) + abs(tuple_cruiser[1]-tuple_peaks[1]
-        #alldist[i] = distance
-    #tuple_hub = map [player_name]['hub']['place']
-   # distancehub = abs(tuple_cruiser[0]-tuple_hub[0]) + abs(tuple_cruiser[1]-tuple_hub[1])
-   # alldist[map ['number_peaks']+1)] = distancehub
-    #nearest = min(alldist)
-    #if index(nearest) in 0:map ['number_peaks']-1:
-      #  tuple_peaks = map [player_name]['peak'+index(nearest)['place']
-      #  distx = 
-       # while distance < 8:        
-    #tuple_tanker = map [player_name]['tankers'][unit_giving]['place']
-    
 
 def regeneration (player_name):
 
@@ -449,6 +436,7 @@ def turn_finish () :
     """
     your_turn == False
     return your_turn
+
 def order ()
 
 def energy_quest ():
