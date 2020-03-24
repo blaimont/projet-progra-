@@ -416,20 +416,7 @@ def give_energy (unit_giving, unit_receiving, energy_amount, player_name):
       #  distx = 
        # while distance < 8:        
     #tuple_tanker = map [player_name]['tankers'][unit_giving]['place']
-    distx = tuple_cruiser[0]-tuple_peaks[0]
-    disty = tuple_cruiser[1]-tuple_peaks[1]
-    if distx < 0:
-        for i in range(1:abs(distx))
-            move(unit_receiving,player_name, 'right')
-    else
-         for i in range(1:distx)
-            move(unit_receiving,player_name, 'left')
-    if disty < 0:
-        for i in range(1:abs(disty))
-            move(unit_receiving,player_name, 'up')
-    else
-         for i in range(1:disty)
-            move(unit_receiving,player_name, 'down')
+    
 
 def regeneration (player_name):
 
