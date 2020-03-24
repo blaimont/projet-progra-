@@ -1,7 +1,18 @@
 import colored,random, sys
 
-map = {}
-def create_map ():
+
+def create_map (dictionnary):
+    """ This fonction creates the map with the peaks and hubs on it.
+    
+    Return
+    ------
+    map = the map with the peaks and hubs
+
+    Version
+    -------
+    Specification : 
+    Implémentation :
+    """
     fh = open ('energy_quest.txt', 'w')
 
     #write the rows and cols of the map 
@@ -70,9 +81,16 @@ def create_map ():
     #add tankers and cruisers key
     fh.close ()
     return map 
-create_map ()
+
 
 def showboard ():
+    """This fonction displays a board with all the informations
+
+    Version
+    -------
+    Specification : 
+    Implémentation : 
+    """
     sice = map ['sice']
     sys.argv[1]= sice[0]
     sys.argv[2] = sice[1]
@@ -122,17 +140,18 @@ def showboard ():
         
     board_str += line * nb_cols
     print (board_str)  
+
 def create_cruiser (cruiser_name, player_name):
     """ This fonction creates the cruisers next to the hub.
     Parameters
     ----------
+    hub_place : the place of the hub of the player who creates the cruiser (str)
     cruiser_name : the name of the cruiser (str)
     player_name : the name of the player (str)
 
     Return
     ------
-   all_cruisers : a dico with all the different cruisers (dict)
-   cruiser_name : the name of the cruiser (dict)
+    map : the map with the new cruiser (dict)
 
     Version
     -------
@@ -141,7 +160,7 @@ def create_cruiser (cruiser_name, player_name):
     """
 
     hub_place = map [player_name]['hub']['place']
-    map [player_name]['cruisers']= {cruiser_name:{'place': (hub_place[0],hub_place[1]+1),
+    map [player_name]['cruisers']= {cruiser_name:{'place': (hub_place[0],hub_place[1]),
                                                     'structure_points':100,
                                                     'energy_capacity':400,
                                                     'energy':400,
@@ -150,29 +169,27 @@ def create_cruiser (cruiser_name, player_name):
                                                     'firing_range':1}}
     #retirer l'énergie dans le bon hub
     return (map)
-create_cruiser ('cruiser1', 'player1')
-showboard ()
+
 
 def create_tanker (tanker_name, player_name):
     """ This fonction creates the tankers next to the hub.
     Parameters
     ----------
+    hub_place : the place of the hub of the player who creates the tanker (str)
     tanker_name : the name of the tanker (str)
     player_name : the name of the player (str)
 
     Return
     ------
-    all_tankers : a dico with all the different tankers (dict)
-    tanker_name : the name of the tanker (dict)
+    map : the map with the new tanker (dict)
 
     Version
     -------
     Specification : Louis Blaimont (17/02)
     Implémentation : Camille Hooreman, Louis Blaimont
     """
-    create_map ()
     hub_place = map [player_name]['hub']['place']
-    map [player_name]['tankers']= {tanker_name: {'place': (hub_place[0] + 1,hub_place[1]),
+    map [player_name]['tankers']= {tanker_name: {'place': (hub_place[0],hub_place[1]),
                                                 'structure_points':50,
                                                 'energy_capacity':600,
                                                 'energy':600,
@@ -181,13 +198,17 @@ def create_tanker (tanker_name, player_name):
     
     return map
 
-def move (unity_name, player_name, direction):
+def move (unity_name, direction, player_name):
     """ Move the different unities where it is asked.
     Parameters
     ----------
     unity_name = the name of the unity that will move (str)
-    column_number = the distance in column the unity will do (int)
-    line_number = the distance in line the unity will do (int)
+    player_name = the new of the player who moves his unity (str)
+    direction = the direction where he wants to move his unity (str)
+
+    Return
+    ------
+    map = the map with the unity at its new place (dict)
 
     Version
     -------
@@ -232,18 +253,20 @@ def move (unity_name, player_name, direction):
             map[player_name]['tankers'][unity_name]['place'] = (new_place, place[1])
     return map
     #il faut encore modifier l'énergie des croiseurs lorsqu'ils se déplacent 
-move ('cruiser1','player1', 'right')
-showboard ()
 
-def attack (cruiser_attacking, unity_attacked,player_name, attack_domaged):
+
+def attack (cruiser_attacking, unity_attacked, attack_domaged, player_name):
     """Attack an unity of the other player.
     Parameters
     ----------
-    unity_name = the name of the attacked unity (str)
+    cruiser_attacking = the cruiser who does the attack (str)
+    unity_attacked = the unity being attacked (str)
+    player_name = the player who attacks (str)
+    attack_domaged = the amount of damaged done (int)
 
     Returns
     -------
-    energy_unity = the new energy of the unity after being attacked (int)
+    map = the map with the unities with their new structure points (dict)
 
     Version
     -------
@@ -312,6 +335,22 @@ def attack (cruiser_attacking, unity_attacked,player_name, attack_domaged):
     return map
 
 def upgrade (upgrade_kind, unity_name, player_name):
+    """ All upgrades the player can buy and their effects.
+    Parameters
+    ----------
+    upgrade_kind = which upgrade the player wanna do (str)
+    unity_name = the unity being upgraded (str)
+    player_name = the player who buy an upgrade (str)
+
+    Return
+    ------
+    map = the map with the new informations (dict)
+
+    Version
+    -------
+    Specification :
+    Implementation : 
+    """
     if unity_name[:-1] == 'cruiser':
         if upgrade_kind == 'firing_range' and map[player_name]['hub']['energy'] >=400 and map[player_name]['cruisers'][unity_name]['firing_range'] < 5:
             map[player_name]['cruisers'][unity_name]['firing_range'] += 1
@@ -335,18 +374,17 @@ def upgrade (upgrade_kind, unity_name, player_name):
     return map
 
 def give_energy (unit_giving, unit_receiving, energy_amount, player_name):
-    """ Give energy to a cruiser.
+    """ pick energy of a unit and give it to another one
     Parameters
     ----------
-    player_name = the name of the player
-    tanker_name = the name of the tanker who will give the energy (str)
-    cruiser_name = the name of the cruiser who will recieve the energy (str)
-    energy_amount = the amount of energy gived to the cruiser (int)
+    player_name = the name of the player (str)
+    unit_giving = the name of the unit who gaves his energy (str)
+    unit_receiving = the name of the unit who receives the energy (str)
+    energy_amount = the amount of energy the player wants to give (int)
 
     Return 
     ------
-    energy_cruiser = the new energy of the cruiser (int)
-    energy_tanker = the new energy of the tanker (int)   
+    map = the map the new informations (dict)  
 
     Version
     -------
@@ -394,16 +432,15 @@ def give_energy (unit_giving, unit_receiving, energy_amount, player_name):
 
 def regeneration (player_name):
 
-    """Regenerate the energy of a hub or a peak.
+    """Regenerate the energy of a hub 
     
     Parameters
     ----------
-    percentage_regen_hubs = how much the hubs regenerate after every turn (float)
-    percentage_regen_peaks = how much the peaks regenerate after every turn (float)
+    player_name = the name of the player who has his hubs regenerated (str)
 
     Return
     ------
-    energy_hub = the new energy of the hubs (int)
+    map = the map with the new informations (dict)
 
     Version  
     -------
@@ -413,33 +450,99 @@ def regeneration (player_name):
     map [player_name]['hub']['energy'] += map[player_name]['hub']['regeneration_rate']
     return map
 
-def turn_finish () : 
-    """ Finish the game and tell who's the winner.
-    
+def turn_finish (your_turn) : 
+    """ allows the other player to play 
+    Parameters
+    ----------
+    your_turn = if its a player's turn or not (bool)
+
+    return
+    ------
+    your_turn = if its a player's turn or not (bool)
+
     Version
     -------
     Specification : Camille Hooreman (06/03/20)
     Implementation : 
     """
     your_turn == False
+    showboard ()
     return your_turn
 
-def order ():
-    """ """
+def order (player_name):
+    """ Orders given by the players.
+    Parameters
+    ----------
+    player_name = the name of the player
+    
+    Version
+    -------
+    Specification : 
+    Implementation :
+    """
+    print ('the possible orders you can give are:\n\t- create cruiser\n\t- create tanker\n\t- move\n\t- attack\n\t- give energy\n\t- upgrade\n\t- turn finished')
+    your_turn = True
+    while your_turn == True:
+        orders = str (input ('what do you want to do?: '))
+        if orders == 'create cruiser':
+            cruiser_name = str(input ('what is your cruiser name?:'))
+            create_cruiser (cruiser_name, player_name)
+
+        elif orders == 'create tanker':
+            tanker_name = str(input ('what is your tanker name?:'))
+            create_tanker (tanker_name, player_name)
+
+        elif orders == 'move':
+            moving_unit = str (input ('which unit do you want to move?:'))
+            direction = str(input('in what direction do you want to move it?:'))
+            move (moving_unit, direction, player_name)
+        
+        elif orders == 'attack': #si déjà bouger alors ne peut pas attaquer
+            attacking_unit = str (input('with which cruiser do you want to attack?:'))
+            attacked_unit = str (input ('which unit do you want to attack?:'))
+            attack_domaged= int (input ('how much attack domaged do you want to do?:'))
+            attack (attacking_unit, attacked_unit, attack_domaged, player_name)
+
+        elif orders == 'give energy':
+            giving_unit = str (input ('which unit give the energy?:'))
+            receiving_unit = str (input ('which unit reveive the energy?:'))
+            energy_amount = int (input ('how much energy do you want to transfer?:'))
+            give_energy (giving_unit, receiving_unit, energy_amount, player_name)
+
+        elif orders == 'upgrade':
+            kind_of_upgrade = str(input ('what kind of upgrade do you want to do?:'))
+            unit_name = str (input ('which unit do you want to upgrade?'))
+            upgrade (kind_of_upgrade, unit_name, player_name)
+        
+        elif orders == 'turn finished':
+            showboard ()
+            turn_finish (your_turn)
+
+map = {}
 def energy_quest ():
-    """ launge the game to the end """
-    map = {}
-    create_map ()
+    """ launch the game to the end 
+
+    Version
+    -------
+    Specification :
+    Implementation : 
+    """
+    
+    create_map (map)
     player_turn = random.randint(1,2)
     player1_hub = map ['player1']['hub']['structure_points']
     player2_hub = map ['player2']['hub']['structure_points']
     while  player1_hub > 0 and player2_hub >0:
         your_turn = True
         while your_turn == True:
+            showboard ()
             if player_turn %2 == 0:
                 player_name = 'player1'            
             elif player_turn %2 != 0:
                 player_name = 'player2'
             player_turn += 1
-            order ()h
+            regeneration (player_name)
+            order (player_name)
     print ('the %s won!! \nWell played!!')
+
+energy_quest ()
