@@ -70,7 +70,7 @@ def create_map ():
     #add tankers and cruisers key
     fh.close ()
     return map 
-print (create_map ())
+create_map ()
 
 def showboard ():
     sice = map ['sice']
@@ -263,7 +263,7 @@ def attack (cruiser_attacking, unity_attacked,player_name, attack_domaged):
 
         #attack and changethe dictionnary
         energy_used = 10* attack_domaged
-        distance = abs(tuple_cruiser[0]-tuple_unity[0]) + abs(tuple_cruiser[1]-tuple_unity[1]
+        distance = abs(tuple_cruiser[0]-tuple_unity[0]) + abs(tuple_cruiser[1]-tuple_unity[1])
         firing_range = map['player1']['cruisers'][cruiser_attacking]['firing_range']
         energy = map['player1']['cruisers'][cruiser_attacking]['energy']
         if firing_range <= distance and  energy >= energy_used:
@@ -293,9 +293,8 @@ def attack (cruiser_attacking, unity_attacked,player_name, attack_domaged):
 
         #attack and changethe dictionnary
         energy_used = 10* attack_domaged
-        distance = abs(tuple_cruiser[0]-tuple_unity[0]) + abs(tuple_cruiser[1]-tuple_unity[1]
-        if map['player2']['cruisers'][cruiser_attacking]['firing_range'] <= distance 
-        and map['player2']['cruisers'][cruiser_attacking]['energy'] >= energy_used:
+        distance = abs(tuple_cruiser[0]-tuple_unity[0]) + abs(tuple_cruiser[1]-tuple_unity[1])
+        if map['player2']['cruisers'][cruiser_attacking]['firing_range'] <= distance and map['player2']['cruisers'][cruiser_attacking]['energy'] >= energy_used:
             map ['player2']['cruisers'] [cruiser_attacking]['energy'] -= energy_used
             if unity_attacked[:-1] == 'cruiser':
                 map ['player1']['cruisers'][unity_attacked]['structure_points']-= attack_domaged
@@ -314,31 +313,23 @@ def attack (cruiser_attacking, unity_attacked,player_name, attack_domaged):
 
 def upgrade (upgrade_kind, unity_name, player_name):
     if unity_name[:-1] == 'cruiser':
-        if upgrade_kind == 'firing_range' 
-        and map[player_name]['hub']['energy'] >=400 
-        and map[player_name]['cruisers'][unity_name]['firing_range'] < 5:
+        if upgrade_kind == 'firing_range' and map[player_name]['hub']['energy'] >=400 and map[player_name]['cruisers'][unity_name]['firing_range'] < 5:
             map[player_name]['cruisers'][unity_name]['firing_range'] += 1
             map[player_name]['hub']['energy'] -= 400
         
-        elif upgrade_kind == 'move_cost' 
-        and map[player_name]['hub']['energy'] >=500 
-        and map[player_name]['cruisers'][unity_name]['move_cost'] > 5:
+        elif upgrade_kind == 'move_cost' and map[player_name]['hub']['energy'] >=500 and map[player_name]['cruisers'][unity_name]['move_cost'] > 5:
             map[player_name]['cruisers'][unity_name]['move_cost'] -= 1
             map[player_name]['hub']['energy'] -= 500
         else:
             print ()
 
     elif unity_name[:-1] == 'tanker':
-        if upgrade_kind == 'energy_capacity'
-        and map[player_name]['tankers'][unity_name]['energy_capacity'] < 1200
-        and map[player_name]['hub']['energy'] >= 600:
+        if upgrade_kind == 'energy_capacity' and map[player_name]['tankers'][unity_name]['energy_capacity'] < 1200and map[player_name]['hub']['energy'] >= 600:
             map[player_name]['tankers'][unity_name]['energy_capacity'] +=100 
             map[player_name]['hub']['energy'] -= 600
         
     elif unity_name == 'hub':
-        if upgrade_kind == 'regenartion_rate'
-        and map[player_name] ['hub']['regeneration_rate'] < 50
-        and map[player_name]['hub']['energy'] >= 750:
+        if upgrade_kind == 'regenartion_rate' and map[player_name] ['hub']['regeneration_rate'] < 50 and map[player_name]['hub']['energy'] >= 750:
             map[player_name] ['hub']['regeneration_rate'] +=5 
             map[player_name]['hub']['energy'] -= 750
     return map
@@ -368,8 +359,7 @@ def give_energy (unit_giving, unit_receiving, energy_amount, player_name):
             tuple_hub = map [player_name]['hub']['place']
             if tuple_tanker == tuple_hub:
                 energy_capacity = [player_name]['hub']['energy_capacity']
-                if map [player_name]['hub']['energy'] + energy_amount <= energy_capcity 
-                and  map [player_name]['tankers'][unit_giving]['energy'] - energy_amount >=0:
+                if (map [player_name]['hub']['energy'] + energy_amount) <= energy_capacity and  map [player_name]['tankers'][unit_giving]['energy'] - energy_amount >=0:
                     map [player_name]['tankers'][unit_giving]['energy'] -= energy_amount
                     map [player_name]['hub']['energy'] += energy_amount
 
@@ -377,8 +367,7 @@ def give_energy (unit_giving, unit_receiving, energy_amount, player_name):
             tuple_cruiser = map [player_name]['cruisers'] [unit_receiving]['place']
             if tuple_tanker == tuple_cruiser:
                 energy_capacity = [player_name]['cruisers'][unit_receiving]['energy_capacity']
-                if map [player_name]['cruisers'] [unit_receiving]['energy'] + energy_amount <= energy_capacity
-                and map [player_name]['tankers'][unit_giving]['energy'] - energy_amount >=0:
+                if map [player_name]['cruisers'] [unit_receiving]['energy'] + energy_amount <= energy_capacity and map [player_name]['tankers'][unit_giving]['energy'] - energy_amount >=0:
                     map [player_name]['tankers'][unit_giving]['energy'] -= energy_amount
                     map [player_name]['cruisers'] [unit_receiving]['energy'] += energy_amount
 
@@ -388,8 +377,7 @@ def give_energy (unit_giving, unit_receiving, energy_amount, player_name):
             tuple_tanker = map [player_name]['tankers'] [unit_receiving]['place']
             if tuple_peak == tuple_tanker:
                 energy_capacity = [player_name]['tankers'][unit_receiving]['energy_capacity']
-                if map [player_name]['tankers'] [unit_receiving]['energy'] + energy_amount <= energy_capacity
-                and map [unit_giving]['energy'] - energy_amount >=0:
+                if map [player_name]['tankers'] [unit_receiving]['energy'] + energy_amount <= energy_capacity and map [unit_giving]['energy'] - energy_amount >=0:
                     map [unit_giving]['energy'] -= energy_amount
                     map [player_name]['tankers'][unit_receiving]['energy'] += energy_amount
     
@@ -399,8 +387,7 @@ def give_energy (unit_giving, unit_receiving, energy_amount, player_name):
             tuple_tanker = map [player_name]['tankers'] [unit_receiving]['place']
             if tuple_hub == tuple_tanker:
                 energy_capacity = [player_name]['tankers'][unit_receiving]['energy_capacity']
-                if map [player_name]['tankers'] [unit_receiving]['energy'] + energy_amount <= energy_capacity
-                and map [player_name]['hub']['energy'] - energy_amount >=0:
+                if map [player_name]['tankers'] [unit_receiving]['energy'] + energy_amount <= energy_capacity and map [player_name]['hub']['energy'] - energy_amount >=0:
                     map [player_name]['hub']['energy'] -= energy_amount
                     map [player_name]['tankers'][unit_giving]['energy'] += energy_amount
     return map
@@ -437,14 +424,16 @@ def turn_finish () :
     your_turn == False
     return your_turn
 
-def order ()
-
+def order ():
+    """ """
 def energy_quest ():
     """ launge the game to the end """
     map = {}
     create_map ()
-    player_turn = random.randint[1,2]
-    while structure_point_hub > 0:
+    player_turn = random.randint(1,2)
+    player1_hub = map ['player1']['hub']['structure_points']
+    player2_hub = map ['player2']['hub']['structure_points']
+    while  player1_hub > 0 and player2_hub >0:
         your_turn = True
         while your_turn == True:
             if player_turn %2 == 0:
@@ -452,4 +441,5 @@ def energy_quest ():
             elif player_turn %2 != 0:
                 player_name = 'player2'
             player_turn += 1
-            order ()
+            order ()h
+    print ('the %s won!! \nWell played!!')
