@@ -363,7 +363,7 @@ def upgrade (upgrade_kind, unity_name, player_name):
             print ()
 
     elif unity_name[:-1] == 'tanker':
-        if upgrade_kind == 'energy_capacity' and map[player_name]['tankers'][unity_name]['energy_capacity'] < 1200and map[player_name]['hub']['energy'] >= 600:
+        if upgrade_kind == 'energy_capacity' and map[player_name]['tankers'][unity_name]['energy_capacity'] < 1200 and map[player_name]['hub']['energy'] >= 600:
             map[player_name]['tankers'][unity_name]['energy_capacity'] +=100 
             map[player_name]['hub']['energy'] -= 600
         
@@ -396,7 +396,7 @@ def give_energy (unit_giving, unit_receiving, energy_amount, player_name):
         if unit_receiving == 'hub':
             tuple_hub = map [player_name]['hub']['place']
             if tuple_tanker == tuple_hub:
-                energy_capacity = [player_name]['hub']['energy_capacity']
+                energy_capacity = map [player_name]['hub']['energy_capacity']
                 if (map [player_name]['hub']['energy'] + energy_amount) <= energy_capacity and  map [player_name]['tankers'][unit_giving]['energy'] - energy_amount >=0:
                     map [player_name]['tankers'][unit_giving]['energy'] -= energy_amount
                     map [player_name]['hub']['energy'] += energy_amount
@@ -404,7 +404,7 @@ def give_energy (unit_giving, unit_receiving, energy_amount, player_name):
         if unit_receiving[:-1] == 'cruiser':
             tuple_cruiser = map [player_name]['cruisers'] [unit_receiving]['place']
             if tuple_tanker == tuple_cruiser:
-                energy_capacity = [player_name]['cruisers'][unit_receiving]['energy_capacity']
+                energy_capacity = map [player_name]['cruisers'][unit_receiving]['energy_capacity']
                 if map [player_name]['cruisers'] [unit_receiving]['energy'] + energy_amount <= energy_capacity and map [player_name]['tankers'][unit_giving]['energy'] - energy_amount >=0:
                     map [player_name]['tankers'][unit_giving]['energy'] -= energy_amount
                     map [player_name]['cruisers'] [unit_receiving]['energy'] += energy_amount
@@ -414,7 +414,7 @@ def give_energy (unit_giving, unit_receiving, energy_amount, player_name):
         if unit_receiving[:-1] == 'tanker':
             tuple_tanker = map [player_name]['tankers'] [unit_receiving]['place']
             if tuple_peak == tuple_tanker:
-                energy_capacity = [player_name]['tankers'][unit_receiving]['energy_capacity']
+                energy_capacity = map[player_name]['tankers'][unit_receiving]['energy_capacity']
                 if map [player_name]['tankers'] [unit_receiving]['energy'] + energy_amount <= energy_capacity and map [unit_giving]['energy'] - energy_amount >=0:
                     map [unit_giving]['energy'] -= energy_amount
                     map [player_name]['tankers'][unit_receiving]['energy'] += energy_amount
@@ -424,7 +424,7 @@ def give_energy (unit_giving, unit_receiving, energy_amount, player_name):
         if unit_receiving[:-1] == 'tanker':
             tuple_tanker = map [player_name]['tankers'] [unit_receiving]['place']
             if tuple_hub == tuple_tanker:
-                energy_capacity = [player_name]['tankers'][unit_receiving]['energy_capacity']
+                energy_capacity = map[player_name]['tankers'][unit_receiving]['energy_capacity']
                 if map [player_name]['tankers'] [unit_receiving]['energy'] + energy_amount <= energy_capacity and map [player_name]['hub']['energy'] - energy_amount >=0:
                     map [player_name]['hub']['energy'] -= energy_amount
                     map [player_name]['tankers'][unit_giving]['energy'] += energy_amount
@@ -519,6 +519,8 @@ def order (player_name):
             turn_finish (your_turn)
         
         elif orders == 'stop':
+
+            yout_turn = False
             map ['player1']['hub']['structure_points'] = 0
 
 map = {}
@@ -547,4 +549,3 @@ def energy_quest ():
             order (player_name)
     print ('the %s won!! \nWell played!!')
 
-energy_quest ()
