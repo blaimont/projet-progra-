@@ -517,6 +517,9 @@ def order (player_name):
         elif orders == 'turn finished':
             showboard ()
             turn_finish (your_turn)
+        
+        elif orders == 'stop':
+            map ['player1']['hub']['structure_points'] = 0
 
 map = {}
 def energy_quest ():
@@ -530,9 +533,8 @@ def energy_quest ():
     
     create_map (map)
     player_turn = random.randint(1,2)
-    player1_hub = map ['player1']['hub']['structure_points']
-    player2_hub = map ['player2']['hub']['structure_points']
-    while  player1_hub > 0 and player2_hub >0:
+
+    while  map ['player1']['hub']['structure_points'] > 0 and map ['player2']['hub']['structure_points'] >0:
         your_turn = True
         while your_turn == True:
             showboard ()
