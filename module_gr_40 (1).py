@@ -230,6 +230,7 @@ def move (unity_name, direction, player_name):
             new_place = place[0] 
             new_place += 1
             map[player_name]['cruisers'][unity_name]['place'] = (new_place, place[1])
+
     elif unity_name[:-1] == 'tanker':
         place = map[player_name]['tankers'][unity_name]['place']
         if direction == 'right':
@@ -272,7 +273,7 @@ def attack (cruiser_attacking, unity_attacked, attack_domaged, player_name):
 
     #for player1
     if player_name == 'player1':
-        tuple_cruiser = map ['player1']['cruisers'][cruiser_attacking]['place']
+        tuple_cruiser = map ['player1']['cruisers'][cruiser_attacking]['place'] 
         if unity_attacked[:-1] == 'cruiser':
             tuple_unity = map ['player2']['cruisers'][unity_attacked]['place']
         elif unity_attacked[:-1] == 'tanker':
@@ -298,7 +299,7 @@ def attack (cruiser_attacking, unity_attacked, attack_domaged, player_name):
                     del map ['player2']['tankers'][unity_attacked]
 
             elif unity_attacked == 'hub':
-                map ['player2']['hub']['structure_points'] -= attack_domaged
+                map ['player2']['hub']['structure_points'] -= attack_domaged 
 
     #for the player2
     elif player_name == 'player2':
@@ -468,9 +469,9 @@ def turn_finish (your_turn) :
     your_turn = False
     return your_turn
 
-def infotmation ():
+def information ():
     """shows all the informations of the game """
-    
+
 def order (player_name):
     """ Orders given by the players.
     Parameters
@@ -493,8 +494,9 @@ def order (player_name):
                 for cruiser in map [player_name]['cruisers']:
                     print ('\t-%s' %(cruiser))
             cruiser_name = str(input ('what is your new cruiser name?:'))
-            if cruiser_name[:-1]== cruiser:
+            if cruiser_name[:-1]== 'cruiser':
                 create_cruiser (cruiser_name, player_name)
+                print ('your cruiser create')
             else:
                 print ('the name of your cruiser need to be "cruiser" with a number or letter after, like this:\n\t-cruiser1\n\t-cruiserZ')            
 
@@ -504,8 +506,9 @@ def order (player_name):
                 for tanker in map [player_name]['tankers']:
                     print ('\t-%s' %(tanker))
             tanker_name = str(input ('what is your tanker name?:'))
-            if tanker_name[:-1]== tanker:
+            if tanker_name[:-1]== 'tanker':
                 create_tanker (tanker_name, player_name)
+                print ('your cruiser create')
             else:
                 print ('the name of your tanker need to be "tanker" with a number or letter after, like this:\n\t-tanker1\n\t-tankerE')
        
@@ -586,15 +589,17 @@ def energy_quest (dictionnary):
         while your_turn == True:
             showboard ()
             if player_turn %2 == 0:
-                player_name = 'player1'            
+                player_name = 'player1'
+
             elif player_turn %2 != 0:
                 player_name = 'player2'
+                
             print ('%s it is your turn' %(player_name))
             player_turn += 1
             tiple = order (player_name)
             map_player1 = map ['player1']['hub']['structure_points']
             map_player2 = map ['player2']['hub']['structure_points']
-            your_turn = tiple [0] 
+            your_turn = tiple [0]
             
     print ('the %s won!! \nWell played!!'%(player_name))
 
