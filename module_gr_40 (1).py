@@ -443,7 +443,11 @@ def regeneration (player_name):
     Specification : Camille Hooreman (06/03/20)
     Implementation : Elodie Fiorentino
     """
-    map [player_name]['hub']['energy'] += map[player_name]['hub']['regeneration_rate']
+    if map [player_name]['hub']['energy'] + map[player_name]['hub']['regeneration_rate'] <=1500:
+        map [player_name]['hub']['energy'] += map[player_name]['hub']['regeneration_rate']
+    
+    else:
+        print ('you can not regenerate energy because the energy capacity of your hub is not big enough')
     return map
 
 def turn_finish (your_turn) : 
@@ -462,9 +466,11 @@ def turn_finish (your_turn) :
     Implementation : 
     """
     your_turn = False
-    showboard ()
     return your_turn
 
+def infotmation ():
+    """shows all the informations of the game """
+    
 def order (player_name):
     """ Orders given by the players.
     Parameters
@@ -476,22 +482,59 @@ def order (player_name):
     Specification : 
     Implementation :
     """
-    print ('the possible orders you can give are:\n\t- create cruiser\n\t- create tanker\n\t- move\n\t- attack\n\t- give energy\n\t- upgrade\n\t- turn finished')
+    print ('the possible orders you can give are:\n\t- create cruiser\n\t- create tanker\n\t- move\n\t- attack\n\t- give energy\n\t- upgrade\n\t- turn finished\n\t- information')
+    regeneration (player_name)
     your_turn = True
     while your_turn == True:
         orders = str (input ('what do you want to do?: '))
         if orders == 'create cruiser':
-            cruiser_name = str(input ('what is your cruiser name?:'))
-            create_cruiser (cruiser_name, player_name)
+            if 'cruisers' in map[player_name]:
+                print ('the cruisers that already exists are:')
+                for cruiser in map [player_name]['cruisers']:
+                    print ('\t-%s' %(cruiser))
+            cruiser_name = str(input ('what is your new cruiser name?:'))
+            if cruiser_name[:-1]== cruiser:
+                create_cruiser (cruiser_name, player_name)
+            else:
+                print ('the name of your cruiser need to be "cruiser" with a number or letter after, like this:\n\t-cruiser1\n\t-cruiserZ')            
 
         elif orders == 'create tanker':
+            if 'tankers' in map[player_name]:
+                print ('the tankers that already exists are:')
+                for tanker in map [player_name]['tankers']:
+                    print ('\t-%s' %(tanker))
             tanker_name = str(input ('what is your tanker name?:'))
-            create_tanker (tanker_name, player_name)
-
+            if tanker_name[:-1]== tanker:
+                create_tanker (tanker_name, player_name)
+            else:
+                print ('the name of your tanker need to be "tanker" with a number or letter after, like this:\n\t-tanker1\n\t-tankerE')
+       
         elif orders == 'move':
-            moving_unit = str (input ('which unit do you want to move?:'))
-            direction = str(input('in what direction do you want to move it?:'))
-            move (moving_unit, direction, player_name)
+            if 'tankers' in map[player_name] or 'cruisers' in map[player_name]:
+                print ('the name of the tankers that can move are:')
+                for tanker in map[player_name]['tankers']:
+                    print ('\t-%s'%(tanker))
+
+                print ('the name of the cruisers that can move are:')
+                for cruiser in map[player_name]['cruisers']:
+                    print ('\t-%s'%(cruiser))
+                
+                moving_unit = str (input ('which unit do you want to move?:'))
+
+                if moving_unit in map [player_name]['cruisers'] or moving_unit in map [player_name]['tankers']:
+                    print ('you can move in 4 directions\n\t-up\n\t-down\n\t-right\n\t-left')
+                    direction = str(input('in what direction do you want to move it?:'))
+                    
+                    if direction == 'up' or direction == 'down' or direction == 'right' or direction == 'left':
+                        move (moving_unit, direction, player_name)
+                        print ('yout unit %s just moved %s'%(moving_unit, direction))
+                    else:
+                        print ('the direction %s is not possible'%(direction))
+                else:
+                    print ('the unit %s does NOT exist'%(moving_unit))
+            else:
+                print ('there are NO tankers or cruisers to move')
+            
         
         elif orders == 'attack': #si déjà bouger alors ne peut pas attaquer
             attacking_unit = str (input('with which cruiser do you want to attack?:'))
@@ -510,17 +553,22 @@ def order (player_name):
             unit_name = str (input ('which unit do you want to upgrade?'))
             upgrade (kind_of_upgrade, unit_name, player_name)
         
+        elif orders == 'information':
+            information ()
+        
         elif orders == 'turn finished':
-            showboard ()
-            turn_finish (your_turn)
+            your_turn = turn_finish (your_turn)
         
         elif orders == 'stop':
-
-            your_turn = False
             map ['player1']['hub']['structure_points'] = 0
-    return your_turn
+            your_turn = False
+        
+        else:
+            print ('\nthis order is not possible')
+
+    return your_turn, map
 map = {}
-def energy_quest ():
+def energy_quest (dictionnary):
     """ launch the game to the end 
 
     Version
@@ -529,10 +577,11 @@ def energy_quest ():
     Implementation : 
     """
     
-    create_map (map)
+    create_map (dictionnary)
     player_turn = random.randint(1,2)
-
-    while  map ['player1']['hub']['structure_points'] > 0 and map ['player2']['hub']['structure_points'] >0:
+    map_player1 = map ['player1']['hub']['structure_points']
+    map_player2 = map ['player2']['hub']['structure_points']
+    while map_player1 > 0 and map_player2 >0:
         your_turn = True
         while your_turn == True:
             showboard ()
@@ -540,8 +589,13 @@ def energy_quest ():
                 player_name = 'player1'            
             elif player_turn %2 != 0:
                 player_name = 'player2'
+            print ('%s it is your turn' %(player_name))
             player_turn += 1
-            regeneration (player_name)
-            order (player_name)
-    print ('the %s won!! \nWell played!!')
-energy_quest ()
+            tiple = order (player_name)
+            map_player1 = map ['player1']['hub']['structure_points']
+            map_player2 = map ['player2']['hub']['structure_points']
+            your_turn = tiple [0] 
+            
+    print ('the %s won!! \nWell played!!'%(player_name))
+
+energy_quest (map)
