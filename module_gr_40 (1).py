@@ -461,7 +461,7 @@ def turn_finish (your_turn) :
     Specification : Camille Hooreman (06/03/20)
     Implementation : 
     """
-    your_turn == False
+    your_turn = False
     showboard ()
     return your_turn
 
@@ -518,7 +518,7 @@ def order (player_name):
 
             your_turn = False
             map ['player1']['hub']['structure_points'] = 0
-
+    return your_turn
 map = {}
 def energy_quest ():
     """ launch the game to the end 
@@ -544,3 +544,4 @@ def energy_quest ():
             regeneration (player_name)
             order (player_name)
     print ('the %s won!! \nWell played!!')
+energy_quest ()
