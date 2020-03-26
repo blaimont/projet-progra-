@@ -1,6 +1,5 @@
 import colored,random, sys
 
-
 def create_map (dictionnary):
     """ This fonction creates the map with the peaks and hubs on it.
     
@@ -81,7 +80,6 @@ def create_map (dictionnary):
     #add tankers and cruisers key
     fh.close ()
     return map 
-
 
 def showboard ():
     """This fonction displays a board with all the informations
@@ -170,7 +168,6 @@ def create_cruiser (cruiser_name, player_name):
     #retirer l'énergie dans le bon hub
     return (map)
 
-
 def create_tanker (tanker_name, player_name):
     """ This fonction creates the tankers next to the hub.
     Parameters
@@ -253,7 +250,6 @@ def move (unity_name, direction, player_name):
             map[player_name]['tankers'][unity_name]['place'] = (new_place, place[1])
     return map
     #il faut encore modifier l'énergie des croiseurs lorsqu'ils se déplacent 
-
 
 def attack (cruiser_attacking, unity_attacked, attack_domaged, player_name):
     """Attack an unity of the other player.
@@ -520,7 +516,7 @@ def order (player_name):
         
         elif orders == 'stop':
 
-            yout_turn = False
+            your_turn = False
             map ['player1']['hub']['structure_points'] = 0
 
 map = {}
@@ -548,4 +544,3 @@ def energy_quest ():
             regeneration (player_name)
             order (player_name)
     print ('the %s won!! \nWell played!!')
-
