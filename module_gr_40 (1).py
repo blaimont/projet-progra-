@@ -140,7 +140,7 @@ def showboard ():
     print (board_str)  
 
 def create_cruiser (cruiser_name, player_name):
-    """ This fonction creates the cruisers next to the hub.
+    """ This fonction creates the cruisers at the same place as the hub.
     Parameters
     ----------
     hub_place : the place of the hub of the player who creates the cruiser (str)
@@ -169,7 +169,7 @@ def create_cruiser (cruiser_name, player_name):
     return (map)
 
 def create_tanker (tanker_name, player_name):
-    """ This fonction creates the tankers next to the hub.
+    """ This fonction creates the tankers at the same place as the hub.
     Parameters
     ----------
     hub_place : the place of the hub of the player who creates the tanker (str)
@@ -513,11 +513,11 @@ def order (player_name):
                 print ('the name of your tanker need to be "tanker" with a number or letter after, like this:\n\t-tanker1\n\t-tankerE')
        
         elif orders == 'move':
-            if 'tankers' in map[player_name] or 'cruisers' in map[player_name]:
+            if 'tankers' in map[player_name]:
                 print ('the name of the tankers that can move are:')
                 for tanker in map[player_name]['tankers']:
                     print ('\t-%s'%(tanker))
-
+            if 'cruisers' in map[player_name]:
                 print ('the name of the cruisers that can move are:')
                 for cruiser in map[player_name]['cruisers']:
                     print ('\t-%s'%(cruiser))
@@ -570,8 +570,9 @@ def order (player_name):
             print ('\nthis order is not possible')
 
     return your_turn, map
+
 map = {}
-def energy_quest (dictionnary):
+def energy_quest (dictionnary): 
     """ launch the game to the end 
 
     Version
@@ -593,7 +594,8 @@ def energy_quest (dictionnary):
 
             elif player_turn %2 != 0:
                 player_name = 'player2'
-                
+                IAAAAAA
+
             print ('%s it is your turn' %(player_name))
             player_turn += 1
             tiple = order (player_name)
@@ -602,5 +604,4 @@ def energy_quest (dictionnary):
             your_turn = tiple [0]
             
     print ('the %s won!! \nWell played!!'%(player_name))
-
 energy_quest (map)
