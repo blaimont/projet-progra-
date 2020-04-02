@@ -594,8 +594,7 @@ def energy_quest (dictionnary):
 
             elif player_turn %2 != 0:
                 player_name = 'player2'
-                IAAAAAA
-
+            
             print ('%s it is your turn' %(player_name))
             player_turn += 1
             tiple = order (player_name)
